@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <!-- Reusable definition of the geometric tile -->
+  <defs>
+    <g id="star-tile">
+      <!-- Base Grid Lines -->
+      <line x1="0" y1="0" x2="120" y2="120" stroke="#d4af37" stroke-width="0.5" opacity="0.15" />
+      <line x1="120" y1="0" x2="0" y2="120" stroke="#d4af37" stroke-width="0.5" opacity="0.15" />
+      <line x1="60" y1="0" x2="60" y2="120" stroke="#d4af37" stroke-width="0.5" opacity="0.15" />
+      <line x1="0" y1="60" x2="120" y2="60" stroke="#d4af37" stroke-width="0.5" opacity="0.15" />
+
+      <!-- Outer Diamond -->
+      <polygon points="60,5 115,60 60,115 5,60" fill="none" stroke="#d4af37" stroke-width="0.75" opacity="0.25" />
+
+      <!-- Overlapping Squares (8-Point Star) -->
+      <rect x="25" y="25" width="70" height="70" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.4" transform="rotate(0 60 60)" />
+      <rect x="25" y="25" width="70" height="70" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.4" transform="rotate(45 60 60)" />
+
+      <!-- Concentric Hexadecagon (16-point star-like outline) -->
+      <polygon points="60,15 77,20 91,33 97,50 97,70 91,87 77,100 60,105 43,100 29,87 23,70 23,50 29,33 43,20" fill="none" stroke="#d4af37" stroke-width="0.5" opacity="0.2" />
+
+      <!-- Inner Octagram -->
+      <g transform="scale(0.6) translate(40, 40)">
+        <rect x="25" y="25" width="70" height="70" fill="none" stroke="#d4af37" stroke-width="0.75" opacity="0.5" />
+        <rect x="25" y="25" width="70" height="70" fill="none" stroke="#d4af37" stroke-width="0.75" opacity="0.5" transform="rotate(45 60 60)" />
+      </g>
+
+      <!-- Center Medallion -->
+      <circle cx="60" cy="60" r="12" fill="none" stroke="#d4af37" stroke-width="1" opacity="0.6" />
+      <circle cx="60" cy="60" r="6" fill="none" stroke="#d4af37" stroke-width="0.5" opacity="0.4" />
+      <circle cx="60" cy="60" r="2" fill="#d4af37" opacity="0.6" />
+      
+      <!-- Corner Accents -->
+      <circle cx="0" cy="0" r="10" fill="none" stroke="#d4af37" stroke-width="0.5" opacity="0.2" />
+      <circle cx="120" cy="0" r="10" fill="none" stroke="#d4af37" stroke-width="0.5" opacity="0.2" />
+      <circle cx="0" cy="120" r="10" fill="none" stroke="#d4af37" stroke-width="0.5" opacity="0.2" />
+      <circle cx="120" cy="120" r="10" fill="none" stroke="#d4af37" stroke-width="0.5" opacity="0.2" />
+    </g>
+  </defs>
+
+  <!-- Fill with the pattern tile -->
+  <rect width="100%" height="100%" fill="none" />
+  <use href="#star-tile" x="0" y="0" />
+</svg>

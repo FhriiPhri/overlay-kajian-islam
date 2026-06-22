@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kajian Islami - OBS Live Controller</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    body {
+      background-color: #0c0f0e;
+      padding: 40px;
+      font-family: var(--font-sans);
+      min-height: 100vh;
+    }
+
+    /* Main Container Grid */
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      gap: 30px;
+    }
+
+    /* Header Section */
+    .dashboard-header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 10px;
+    }
+
+    .header-title-area {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-logo {
+      width: 45px;
+      height: 45px;
+      background: var(--gold-gradient);
+      mask: url('assets/pattern.svg') no-repeat center/contain;
+      -webkit-mask: url('assets/pattern.svg') no-repeat center/contain;
+    }
+
+    .dashboard-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-light);
+      letter-spacing: 0.5px;
+    }
+
+    .dashboard-header h1 span {
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Connection Status Badge */
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1a1e1c;
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: var(--border-radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444; /* Default disconnected */
+      box-shadow: 0 0 8px #ef4444;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .status-dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-gold);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 10px;
+    }
+
+    /* Input Styling */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-light);
+      padding: 12px 16px;
+      font-size: 15px;
+      border-radius: var(--border-radius-sm);
+      outline: none;
+      font-family: var(--font-sans);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Toggle Switches */
+    .switch-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      margin-top: 5px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #333;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary-emerald-light);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .switch-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-light);
+    }
+
+    /* Buttons Panel */
+    .action-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: var(--font-sans);
+      transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--gold-gradient);
+      color: var(--bg-dark);
+      box-shadow: var(--gold-glow);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.1);
+    }
+
+    .btn-success {
+      background: var(--bg-emerald-gradient);
+      color: var(--text-light);
+      border: 1px solid var(--gold-primary);
+      box-shadow: 0 0 15px rgba(5, 62, 38, 0.4);
+    }
+
+    .btn-success:hover {
+      background: var(--primary-emerald-light);
+    }
+
+    .btn-danger {
+      background: #7f1d1d;
+      color: var(--text-light);
+      border: 1px solid #ef4444;
+    }
+
+    .btn-danger:hover {
+      background: #991b1b;
+    }
+
+    .btn-secondary {
+      background: #262626;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      color: var(--text-light);
+      border-color: #555;
+    }
+
+    .btn-span-2 {
+      grid-column: span 2;
+    }
+
+    /* Live Preview Section */
+    .preview-box {
+      width: 480px;
+      height: 270px;
+      background: #111;
+      border: 2px dashed var(--border-color);
+      border-radius: var(--border-radius-sm);
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+
+    .preview-iframe {
+      width: 3840px;
+      height: 2160px;
+      border: none;
+      transform: scale(0.125);
+      transform-origin: top left;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .preview-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      color: var(--text-gold);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--gold-dark);
+      z-index: 10;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Preset & Library Section */
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 15px;
+      padding-right: 5px;
+    }
+
+    .preset-item {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 12px 15px;
+      border-radius: var(--border-radius-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: pointer;
+    }
+
+    .preset-item:hover {
+      border-color: var(--gold-primary);
+      background: #2a2a2a;
+    }
+
+    .preset-info {
+      flex: 1;
+    }
+
+    .preset-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .preset-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .preset-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .icon-btn:hover {
+      color: var(--text-light);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .icon-btn-delete:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .library-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .library-header h3 {
+      font-size: 15px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Right column stacking */
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <!-- File Warning Banner -->
+    <div id="file-warning-banner" style="display: none; background: rgba(127, 29, 29, 0.9); border: 2px solid #ef4444; color: #ffdddd; padding: 20px; border-radius: var(--border-radius); text-align: center; font-weight: 700; grid-column: 1 / -1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); font-size: 16px;">
+      ⚠️ PERINGATAN: Anda membuka file langsung dari browser (Protokol File).<br>
+      <span style="font-weight: 400; font-size: 14px; color: #bbbbbb; margin-top: 5px; display: inline-block;">
+        Hubungan real-time dengan OBS tidak akan berfungsi. Silakan tutup tab ini, lalu jalankan file <strong style="color: var(--gold-light);">start.bat</strong> di folder Anda untuk memulai server local dengan benar.
+      </span>
+    </div>
+    
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-title-area">
+        <div class="header-logo"></div>
+        <h1>LIVE <span>CONTROLLER KAJIAN</span></h1>
+      </div>
+      <div class="status-badge">
+        <span id="connection-dot" class="status-dot"></span>
+        <span id="connection-status">WAITING FOR OBS SOURCE</span>
+      </div>
+    </header>
+
+    <!-- Left Side: Form Controls -->
+    <main class="card">
+      <h2 class="card-title">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        Data Tampilan Lower Third
+      </h2>
+
+      <form id="control-form" onsubmit="event.preventDefault();">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="input-badge">Label Kategori</label>
+            <input type="text" id="input-badge" placeholder="Contoh: KAJIAN ISLAMI">
+          </div>
+          <div class="form-group" style="display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding-bottom: 5px;">
+            <label class="switch-container">
+              <span class="switch">
+                <input type="checkbox" id="input-live" checked>
+                <span class="slider"></span>
+              </span>
+              <span class="switch-label">Tampilkan Label "LIVE"</span>
+            </label>
+            <label class="switch-container">
+              <span class="switch">
+                <input type="checkbox" id="input-header-active" checked>
+                <span class="slider"></span>
+              </span>
+              <span class="switch-label">Tampilkan HUD Atas (Logo & Jam)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="input-speaker">Nama Pembicara / Ustadz</label>
+          <input type="text" id="input-speaker" placeholder="Contoh: Ustadz Dr. Khalid Basalamah, Lc., M.A.">
+        </div>
+
+        <div class="form-group">
+          <label for="input-title">Judul / Tema Kajian</label>
+          <input type="text" id="input-title" placeholder="Contoh: Sebab-Sebab Lapang Dada">
+        </div>
+
+        <!-- Mutiara Ayat / Hadits Collapsible Section -->
+        <div style="border-top: 1px dashed var(--border-color); margin: 25px 0 15px; padding-top: 15px;">
+          <label class="switch-container" style="margin-bottom: 15px;">
+            <span class="switch">
+              <input type="checkbox" id="toggle-quote-enable">
+              <span class="slider"></span>
+            </span>
+            <span class="switch-label" style="font-weight: 700; color: var(--text-gold);">Sertakan Mutiara Ayat / Hadits</span>
+          </label>
+        </div>
+
+        <div id="quote-fields" style="display: none;">
+          <div class="form-group">
+            <label for="input-quote">Isi Kutipan (Ayat / Hadits)</label>
+            <textarea id="input-quote" placeholder="Contoh: Bukankah Kami telah melapangkan dadamu (Muhammad)?"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="input-quote-ref">Referensi Sumber</label>
+            <input type="text" id="input-quote-ref" placeholder="Contoh: QS. Asy-Syarh: 1">
+          </div>
+        </div>
+
+        <!-- Running Text Ticker Section -->
+        <div style="border-top: 1px dashed var(--border-color); margin: 25px 0 15px; padding-top: 15px;">
+          <h3 style="font-size: 14px; font-weight: 700; color: var(--text-gold); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Running Text / Ticker</h3>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="input-ticker-label">Label Ticker</label>
+            <input type="text" id="input-ticker-label" placeholder="Contoh: INFO KAJIAN">
+          </div>
+          <div class="form-group" style="display: flex; align-items: flex-end; padding-bottom: 12px;">
+            <label class="switch-container">
+              <span class="switch">
+                <input type="checkbox" id="input-ticker-visible" checked>
+                <span class="slider"></span>
+              </span>
+              <span class="switch-label">Tampilkan Running Text</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="input-ticker-text">Konten Running Text</label>
+          <textarea id="input-ticker-text" placeholder="Masukkan pengumuman atau teks berjalan di sini..."></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-panel">
+          <button type="button" id="btn-show" class="btn btn-success btn-span-2">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            Tampilkan di Layar
+          </button>
+          <button type="button" id="btn-update" class="btn btn-primary">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
+            Perbarui Live
+          </button>
+          <button type="button" id="btn-hide" class="btn btn-danger">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 11H9v2H7V9h6c1.66 0 3 1.34 3 3s-1.34 3-3 3h-1v-2z"/></svg>
+            Sembunyikan
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <!-- Right Side: Live Preview & Library Presets -->
+    <div class="right-column">
+      
+      <!-- Live Preview -->
+      <section class="card" style="padding: 20px;">
+        <h2 class="card-title" style="margin-bottom: 15px;">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+          Live Render Monitor
+        </h2>
+        <div class="preview-box">
+          <span class="preview-label">PREVIEW (1/4 SCALE)</span>
+          <iframe id="preview-frame" class="preview-iframe" src="output.html"></iframe>
+        </div>
+      </section>
+
+      <!-- Preset Libraries -->
+      <section class="card">
+        <h2 class="card-title">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          Perpustakaan Tema
+        </h2>
+
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="preset-save-name" placeholder="Nama Preset Baru" style="flex: 1;">
+          <button type="button" id="btn-save-preset" class="btn btn-secondary" style="padding: 0 15px;">
+            Simpan
+          </button>
+        </div>
+
+        <div class="library-header">
+          <h3>Preset Tersimpan</h3>
+        </div>
+
+        <div id="presets-container" class="preset-list">
+          <!-- Dynamically filled -->
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Elements references
+    const inputBadge = document.getElementById('input-badge');
+    const inputLive = document.getElementById('input-live');
+    const inputSpeaker = document.getElementById('input-speaker');
+    const inputTitle = document.getElementById('input-title');
+    const toggleQuote = document.getElementById('toggle-quote-enable');
+    const quoteFields = document.getElementById('quote-fields');
+    const inputQuote = document.getElementById('input-quote');
+    const inputQuoteRef = document.getElementById('input-quote-ref');
+    
+    const inputTickerLabel = document.getElementById('input-ticker-label');
+    const inputTickerVisible = document.getElementById('input-ticker-visible');
+    const inputTickerText = document.getElementById('input-ticker-text');
+    const inputHeaderActive = document.getElementById('input-header-active');
+
+    const btnShow = document.getElementById('btn-show');
+    const btnUpdate = document.getElementById('btn-update');
+    const btnHide = document.getElementById('btn-hide');
+    const btnSavePreset = document.getElementById('btn-save-preset');
+    const presetSaveName = document.getElementById('preset-save-name');
+    const presetsContainer = document.getElementById('presets-container');
+
+    const connectionDot = document.getElementById('connection-dot');
+    const connectionStatus = document.getElementById('connection-status');
+    const previewFrame = document.getElementById('preview-frame');
+
+    // Setup BroadcastChannel
+    const channel = new BroadcastChannel('obs_lower_third');
+
+    // Default Islamic Presets
+    const defaultPresets = [
+      {
+        name: "Ustadz Khalid - Lapang Dada",
+        badge: "KAJIAN ISLAMI",
+        isLive: true,
+        speaker: "Ustadz Dr. Khalid Basalamah, Lc., M.A.",
+        title: "Sebab-Sebab Lapang Dada",
+        quoteEnabled: true,
+        quote: "Bukankah Kami telah melapangkan dadamu (Muhammad)?",
+        quoteRef: "QS. Asy-Syarh: 1",
+        tickerLabel: "MUTIARA AYAT",
+        tickerVisible: true,
+        tickerText: "QS. Asy-Syarh: 1-4 | Bukankah Kami telah melapangkan dadamu? Dan Kami pun telah menurunkan bebanmu yang memberatkan punggungmu..."
+      },
+      {
+        name: "Ustadz Adi Hidayat - Ilmu",
+        badge: "TAFSIR AL-QUR'AN",
+        isLive: true,
+        speaker: "Ustadz Adi Hidayat, Lc., M.A.",
+        title: "Kewajiban Menuntut Ilmu Agama",
+        quoteEnabled: true,
+        quote: "Niscaya Allah akan meninggikan orang-orang yang beriman di antaramu dan orang-orang yang diberi ilmu pengetahuan beberapa derajat.",
+        quoteRef: "QS. Al-Mujadilah: 11",
+        tickerLabel: "HADITS NABI",
+        tickerVisible: true,
+        tickerText: "Barangsiapa menempuh suatu jalan untuk mencari ilmu, maka Allah eksklusif mudahkan jalannya menuju Surga. (HR. Muslim)"
+      },
+      {
+        name: "Pengumuman Umum",
+        badge: "LIVE STREAM",
+        isLive: false,
+        speaker: "Selamat Datang di Majelis Ilmu",
+        title: "Mari Jaga Adab & Ketertiban Bersama",
+        quoteEnabled: false,
+        quote: "",
+        quoteRef: "",
+        tickerLabel: "MAKLUMAT",
+        tickerVisible: true,
+        tickerText: "Bagi para jemaah online, silakan mencatat materi kajian dan menonaktifkan suara mikrofon jika berada di ruang interaktif. Semoga bermanfaat."
+      }
+    ];
+
+    let customPresets = [];
+
+    // Toggle Quote Fields visibility
+    toggleQuote.addEventListener('change', () => {
+      quoteFields.style.display = toggleQuote.checked ? 'block' : 'none';
+    });
+
+    // Load initial values from localStorage or defaults
+    function loadState() {
+      const savedState = localStorage.getItem('obs_controller_state');
+      if (savedState) {
+        const state = JSON.parse(savedState);
+        inputBadge.value = state.badge || '';
+        inputLive.checked = state.isLive !== false;
+        inputHeaderActive.checked = state.headerActive !== false;
+        inputSpeaker.value = state.speaker || '';
+        inputTitle.value = state.title || '';
+        toggleQuote.checked = !!state.quoteEnabled;
+        quoteFields.style.display = toggleQuote.checked ? 'block' : 'none';
+        inputQuote.value = state.quote || '';
+        inputQuoteRef.value = state.quoteRef || '';
+        
+        inputTickerLabel.value = state.tickerLabel || 'INFO KAJIAN';
+        inputTickerVisible.checked = state.tickerVisible !== false;
+        inputTickerText.value = state.tickerText || '';
+      } else {
+        // Load default preset values into inputs
+        loadPresetData(defaultPresets[0]);
+      }
+
+      // Load custom presets
+      const savedPresets = localStorage.getItem('obs_custom_presets');
+      if (savedPresets) {
+        customPresets = JSON.parse(savedPresets);
+      }
+      renderPresets();
+    }
+
+    // Save active inputs to localStorage
+    function saveState() {
+      const state = {
+        badge: inputBadge.value,
+        isLive: inputLive.checked,
+        headerActive: inputHeaderActive.checked,
+        speaker: inputSpeaker.value,
+        title: inputTitle.value,
+        quoteEnabled: toggleQuote.checked,
+        quote: inputQuote.value,
+        quoteRef: inputQuoteRef.value,
+        tickerLabel: inputTickerLabel.value,
+        tickerVisible: inputTickerVisible.checked,
+        tickerText: inputTickerText.value
+      };
+      localStorage.setItem('obs_controller_state', JSON.stringify(state));
+    }
+
+    // Load selected preset into the form
+    function loadPresetData(preset) {
+      inputBadge.value = preset.badge || '';
+      inputLive.checked = preset.isLive !== false;
+      inputHeaderActive.checked = preset.headerActive !== false;
+      inputSpeaker.value = preset.speaker || '';
+      inputTitle.value = preset.title || '';
+      toggleQuote.checked = !!preset.quoteEnabled;
+      quoteFields.style.display = toggleQuote.checked ? 'block' : 'none';
+      inputQuote.value = preset.quote || '';
+      inputQuoteRef.value = preset.quoteRef || '';
+      inputTickerLabel.value = preset.tickerLabel || 'INFO KAJIAN';
+      inputTickerVisible.checked = preset.tickerVisible !== false;
+      inputTickerText.value = preset.tickerText || '';
+      saveState();
+    }
+
+    // Render presets list
+    function renderPresets() {
+      presetsContainer.innerHTML = '';
+      
+      // Merge defaults with customs
+      const allPresets = [
+        ...defaultPresets.map(p => ({ ...p, isDefault: true })),
+        ...customPresets.map((p, idx) => ({ ...p, isDefault: false, index: idx }))
+      ];
+
+      allPresets.forEach(preset => {
+        const item = document.createElement('div');
+        item.className = 'preset-item';
+        
+        const info = document.createElement('div');
+        info.className = 'preset-info';
+        
+        const name = document.createElement('div');
+        name.className = 'preset-name';
+        name.textContent = preset.name;
+        
+        const desc = document.createElement('div');
+        desc.className = 'preset-desc';
+        desc.textContent = `${preset.speaker ? preset.speaker.split(',')[0] : ''} - ${preset.title || ''}`;
+        
+        info.appendChild(name);
+        info.appendChild(desc);
+        item.appendChild(info);
+
+        // Click on details loads preset
+        info.addEventListener('click', () => {
+          loadPresetData(preset);
+        });
+
+        const actions = document.createElement('div');
+        actions.className = 'preset-actions';
+
+        if (!preset.isDefault) {
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'icon-btn icon-btn-delete';
+          deleteBtn.innerHTML = `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
+          deleteBtn.title = "Hapus Preset";
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deletePreset(preset.index);
+          });
+          actions.appendChild(deleteBtn);
+        } else {
+          const badge = document.createElement('span');
+          badge.style.fontSize = '9px';
+          badge.style.color = 'var(--text-gold)';
+          badge.style.border = '1px solid var(--gold-dark)';
+          badge.style.padding = '2px 6px';
+          badge.style.borderRadius = '3px';
+          badge.textContent = 'SYSTEM';
+          actions.appendChild(badge);
+        }
+
+        item.appendChild(actions);
+        presetsContainer.appendChild(item);
+      });
+    }
+
+    // Save active state as custom preset
+    btnSavePreset.addEventListener('click', () => {
+      const name = presetSaveName.value.trim();
+      if (!name) {
+        alert('Tulis nama preset terlebih dahulu!');
+        return;
+      }
+
+      const newPreset = {
+        name: name,
+        badge: inputBadge.value,
+        isLive: inputLive.checked,
+        headerActive: inputHeaderActive.checked,
+        speaker: inputSpeaker.value,
+        title: inputTitle.value,
+        quoteEnabled: toggleQuote.checked,
+        quote: inputQuote.value,
+        quoteRef: inputQuoteRef.value,
+        tickerLabel: inputTickerLabel.value,
+        tickerVisible: inputTickerVisible.checked,
+        tickerText: inputTickerText.value
+      };
+
+      customPresets.push(newPreset);
+      localStorage.setItem('obs_custom_presets', JSON.stringify(customPresets));
+      presetSaveName.value = '';
+      renderPresets();
+    });
+
+    // Delete custom preset
+    function deletePreset(index) {
+      if (confirm('Apakah Anda yakin ingin menghapus preset ini?')) {
+        customPresets.splice(index, 1);
+        localStorage.setItem('obs_custom_presets', JSON.stringify(customPresets));
+        renderPresets();
+      }
+    }
+
+    // --- Action Triggers via HTTP Server API ---
+    
+    let currentServerState = {
+      lowerThirdActive: false,
+      tickerActive: true,
+      badge: '',
+      isLive: true,
+      headerActive: true,
+      speaker: '',
+      title: '',
+      quote: '',
+      quoteRef: '',
+      tickerLabel: 'INFO KAJIAN',
+      tickerVisible: true,
+      tickerText: '',
+      timestamp: 0
+    };
+
+    async function sendStateToServer() {
+      // Build the current state object from inputs
+      currentServerState.badge = inputBadge.value;
+      currentServerState.isLive = inputLive.checked;
+      currentServerState.headerActive = inputHeaderActive.checked;
+      currentServerState.speaker = inputSpeaker.value;
+      currentServerState.title = inputTitle.value;
+      currentServerState.quote = toggleQuote.checked ? inputQuote.value : '';
+      currentServerState.quoteRef = toggleQuote.checked ? inputQuoteRef.value : '';
+      currentServerState.tickerLabel = inputTickerLabel.value;
+      currentServerState.tickerVisible = inputTickerVisible.checked;
+      currentServerState.tickerText = inputTickerText.value;
+      currentServerState.timestamp = Date.now();
+
+      saveState();
+
+      try {
+        await fetch('/api/state', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(currentServerState)
+        });
+      } catch (err) {
+        console.error("Failed to save state to server:", err);
+      }
+    }
+
+    btnShow.addEventListener('click', async () => {
+      currentServerState.lowerThirdActive = true;
+      await sendStateToServer();
+    });
+
+    btnUpdate.addEventListener('click', async () => {
+      await sendStateToServer();
+    });
+
+    btnHide.addEventListener('click', async () => {
+      currentServerState.lowerThirdActive = false;
+      await sendStateToServer();
+    });
+
+    // Auto-save & sync header on toggle
+    inputHeaderActive.addEventListener('change', async () => {
+      await sendStateToServer();
+    });
+
+    // Auto-save & sync ticker on toggle
+    inputTickerVisible.addEventListener('change', async () => {
+      currentServerState.tickerVisible = inputTickerVisible.checked;
+      await sendStateToServer();
+    });
+
+    // Auto-save form values on editing
+    const allInputs = [
+      inputBadge, inputLive, inputHeaderActive, inputSpeaker, inputTitle, 
+      toggleQuote, inputQuote, inputQuoteRef, 
+      inputTickerLabel, inputTickerText
+    ];
+    allInputs.forEach(input => {
+      input.addEventListener('input', saveState);
+      input.addEventListener('change', saveState);
+    });
+
+    // --- Connectivity check (Polling server to see if overlay is connected) ---
+    async function checkOverlayConnection() {
+      try {
+        const res = await fetch('/api/state?client=control');
+        if (res.ok) {
+          const state = await res.json();
+          if (state.overlayConnected) {
+            connectionDot.className = 'status-dot connected';
+            connectionStatus.textContent = 'OBS OVERLAY CONNECTED';
+          } else {
+            connectionDot.className = 'status-dot';
+            connectionStatus.textContent = 'WAITING FOR OBS SOURCE';
+          }
+        } else {
+          connectionDot.className = 'status-dot';
+          connectionStatus.textContent = 'SERVER OFFLINE (RUN START.BAT)';
+        }
+      } catch (err) {
+        connectionDot.className = 'status-dot';
+        connectionStatus.textContent = 'SERVER OFFLINE (RUN START.BAT)';
+      }
+    }
+
+    // Poll server for connection status every 2 seconds
+    setInterval(checkOverlayConnection, 2000);
+    setTimeout(checkOverlayConnection, 200); // initial check
+
+    // Initialize Page
+    loadState();
+
+    // Check if running on local file system instead of HTTP server
+    if (window.location.protocol === 'file:') {
+      document.getElementById('file-warning-banner').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
