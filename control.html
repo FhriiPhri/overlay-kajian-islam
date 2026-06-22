@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -77,7 +78,8 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: #ef4444; /* Default disconnected */
+      background: #ef4444;
+      /* Default disconnected */
       box-shadow: 0 0 8px #ef4444;
       transition: background 0.3s, box-shadow 0.3s;
     }
@@ -130,7 +132,9 @@
       letter-spacing: 0.5px;
     }
 
-    input[type="text"], textarea, select {
+    input[type="text"],
+    textarea,
+    select {
       width: 100%;
       background: var(--bg-input);
       border: 1px solid var(--border-color);
@@ -143,7 +147,9 @@
       transition: border-color 0.25s, box-shadow 0.25s;
     }
 
-    input[type="text"]:focus, textarea:focus, select:focus {
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
       border-color: var(--gold-primary);
       box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
     }
@@ -200,11 +206,11 @@
       border-radius: 50%;
     }
 
-    input:checked + .slider {
+    input:checked+.slider {
       background-color: var(--primary-emerald-light);
     }
 
-    input:checked + .slider:before {
+    input:checked+.slider:before {
       transform: translateX(20px);
     }
 
@@ -298,7 +304,7 @@
       border-radius: var(--border-radius-sm);
       overflow: hidden;
       position: relative;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
     }
 
     .preview-iframe {
@@ -315,7 +321,7 @@
       position: absolute;
       top: 10px;
       left: 10px;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0, 0, 0, 0.8);
       color: var(--text-gold);
       font-size: 11px;
       font-weight: 700;
@@ -388,7 +394,7 @@
 
     .icon-btn:hover {
       color: var(--text-light);
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .icon-btn-delete:hover {
@@ -416,19 +422,173 @@
       flex-direction: column;
       gap: 30px;
     }
+
+    /* Scale Slider */
+    .scale-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(212, 175, 55, .07);
+      border: 1px solid rgba(212, 175, 55, .2);
+      border-radius: var(--border-radius-sm);
+      margin-top: 4px;
+    }
+
+    .scale-row label {
+      min-width: 130px;
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .scale-range {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--gold-primary) 0%, #2a2a2a 0%);
+      outline: none;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .scale-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gold-gradient);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(212, 175, 55, .5);
+      border: 2px solid #000;
+      transition: transform .15s;
+    }
+
+    .scale-range::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .scale-range::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gold-gradient);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(212, 175, 55, .5);
+      border: 2px solid #000;
+    }
+
+    .scale-value-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-gold);
+      font-size: 16px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      width: 68px;
+      padding: 6px 8px;
+      border-radius: var(--border-radius-sm);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .scale-value-box:focus {
+      border-color: var(--gold-primary);
+    }
+
+    .scale-presets {
+      display: flex;
+      gap: 6px;
+    }
+
+    .scale-preset-btn {
+      background: #1a1a1a;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      font-family: var(--font-sans);
+    }
+
+    .scale-preset-btn:hover,
+    .scale-preset-btn.active {
+      border-color: var(--gold-primary);
+      color: var(--gold-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+
+      .right-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 16px;
+      }
+
+      .dashboard-container {
+        gap: 16px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .action-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-span-2 {
+        grid-column: span 1;
+      }
+
+      .right-column {
+        grid-template-columns: 1fr;
+      }
+
+      .scale-row {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .scale-presets {
+        flex-wrap: wrap;
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <div class="dashboard-container">
     <!-- File Warning Banner -->
-    <div id="file-warning-banner" style="display: none; background: rgba(127, 29, 29, 0.9); border: 2px solid #ef4444; color: #ffdddd; padding: 20px; border-radius: var(--border-radius); text-align: center; font-weight: 700; grid-column: 1 / -1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); font-size: 16px;">
+    <div id="file-warning-banner"
+      style="display: none; background: rgba(127, 29, 29, 0.9); border: 2px solid #ef4444; color: #ffdddd; padding: 20px; border-radius: var(--border-radius); text-align: center; font-weight: 700; grid-column: 1 / -1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); font-size: 16px;">
       ⚠️ PERINGATAN: Anda membuka file langsung dari browser (Protokol File).<br>
       <span style="font-weight: 400; font-size: 14px; color: #bbbbbb; margin-top: 5px; display: inline-block;">
-        Hubungan real-time dengan OBS tidak akan berfungsi. Silakan tutup tab ini, lalu jalankan file <strong style="color: var(--gold-light);">start.bat</strong> di folder Anda untuk memulai server local dengan benar.
+        Hubungan real-time dengan OBS tidak akan berfungsi. Silakan tutup tab ini, lalu jalankan file <strong
+          style="color: var(--gold-light);">start.bat</strong> di folder Anda untuk memulai server local dengan benar.
       </span>
     </div>
-    
+
     <!-- Header -->
     <header class="dashboard-header">
       <div class="header-title-area">
@@ -444,7 +604,10 @@
     <!-- Left Side: Form Controls -->
     <main class="card">
       <h2 class="card-title">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+        </svg>
         Data Tampilan Lower Third
       </h2>
 
@@ -454,7 +617,8 @@
             <label for="input-badge">Label Kategori</label>
             <input type="text" id="input-badge" placeholder="Contoh: KAJIAN ISLAMI">
           </div>
-          <div class="form-group" style="display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding-bottom: 5px;">
+          <div class="form-group"
+            style="display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding-bottom: 5px;">
             <label class="switch-container">
               <span class="switch">
                 <input type="checkbox" id="input-live" checked>
@@ -489,14 +653,16 @@
               <input type="checkbox" id="toggle-quote-enable">
               <span class="slider"></span>
             </span>
-            <span class="switch-label" style="font-weight: 700; color: var(--text-gold);">Sertakan Mutiara Ayat / Hadits</span>
+            <span class="switch-label" style="font-weight: 700; color: var(--text-gold);">Sertakan Mutiara Ayat /
+              Hadits</span>
           </label>
         </div>
 
         <div id="quote-fields" style="display: none;">
           <div class="form-group">
             <label for="input-quote">Isi Kutipan (Ayat / Hadits)</label>
-            <textarea id="input-quote" placeholder="Contoh: Bukankah Kami telah melapangkan dadamu (Muhammad)?"></textarea>
+            <textarea id="input-quote"
+              placeholder="Contoh: Bukankah Kami telah melapangkan dadamu (Muhammad)?"></textarea>
           </div>
           <div class="form-group">
             <label for="input-quote-ref">Referensi Sumber</label>
@@ -506,7 +672,9 @@
 
         <!-- Running Text Ticker Section -->
         <div style="border-top: 1px dashed var(--border-color); margin: 25px 0 15px; padding-top: 15px;">
-          <h3 style="font-size: 14px; font-weight: 700; color: var(--text-gold); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Running Text / Ticker</h3>
+          <h3
+            style="font-size: 14px; font-weight: 700; color: var(--text-gold); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+            Running Text / Ticker</h3>
         </div>
 
         <div class="form-row">
@@ -530,18 +698,49 @@
           <textarea id="input-ticker-text" placeholder="Masukkan pengumuman atau teks berjalan di sini..."></textarea>
         </div>
 
+        <!-- Pengaturan Overlay Scale -->
+        <div style="border-top: 1px dashed var(--border-color); margin: 25px 0 15px; padding-top: 15px;">
+          <h3
+            style="font-size: 14px; font-weight: 700; color: var(--text-gold); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+            ⚙️ Pengaturan Ukuran Overlay (Scale)
+          </h3>
+          <div class="scale-row">
+            <label for="input-scale">Skala Elemen</label>
+            <input type="range" id="input-scale" class="scale-range" min="0.5" max="3" step="0.05" value="1">
+            <input type="number" id="input-scale-val" class="scale-value-box" min="0.5" max="3" step="0.05" value="1">
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <span style="font-size:12px; color:var(--text-muted);">0.5× (kecil) — 3× (besar)</span>
+            <div class="scale-presets">
+              <button class="scale-preset-btn" data-val="0.75">0.75×</button>
+              <button class="scale-preset-btn active" data-val="1">1× (default)</button>
+              <button class="scale-preset-btn" data-val="1.5">1.5×</button>
+              <button class="scale-preset-btn" data-val="2">2×</button>
+              <button class="scale-preset-btn" data-val="2.5">2.5×</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Actions -->
         <div class="action-panel">
           <button type="button" id="btn-show" class="btn btn-success btn-span-2">
-            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+            </svg>
             Tampilkan di Layar
           </button>
           <button type="button" id="btn-update" class="btn btn-primary">
-            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z" />
+            </svg>
             Perbarui Live
           </button>
           <button type="button" id="btn-hide" class="btn btn-danger">
-            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 11H9v2H7V9h6c1.66 0 3 1.34 3 3s-1.34 3-3 3h-1v-2z"/></svg>
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 11H9v2H7V9h6c1.66 0 3 1.34 3 3s-1.34 3-3 3h-1v-2z" />
+            </svg>
             Sembunyikan
           </button>
         </div>
@@ -550,11 +749,14 @@
 
     <!-- Right Side: Live Preview & Library Presets -->
     <div class="right-column">
-      
+
       <!-- Live Preview -->
       <section class="card" style="padding: 20px;">
         <h2 class="card-title" style="margin-bottom: 15px;">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z" />
+          </svg>
           Live Render Monitor
         </h2>
         <div class="preview-box">
@@ -566,7 +768,10 @@
       <!-- Preset Libraries -->
       <section class="card">
         <h2 class="card-title">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z" />
+          </svg>
           Perpustakaan Tema
         </h2>
 
@@ -600,11 +805,13 @@
     const quoteFields = document.getElementById('quote-fields');
     const inputQuote = document.getElementById('input-quote');
     const inputQuoteRef = document.getElementById('input-quote-ref');
-    
     const inputTickerLabel = document.getElementById('input-ticker-label');
     const inputTickerVisible = document.getElementById('input-ticker-visible');
     const inputTickerText = document.getElementById('input-ticker-text');
     const inputHeaderActive = document.getElementById('input-header-active');
+    const inputScale = document.getElementById('input-scale');
+    const inputScaleVal = document.getElementById('input-scale-val');
+    const scalePresetBtns = document.querySelectorAll('.scale-preset-btn');
 
     const btnShow = document.getElementById('btn-show');
     const btnUpdate = document.getElementById('btn-update');
@@ -684,10 +891,10 @@
         quoteFields.style.display = toggleQuote.checked ? 'block' : 'none';
         inputQuote.value = state.quote || '';
         inputQuoteRef.value = state.quoteRef || '';
-        
         inputTickerLabel.value = state.tickerLabel || 'INFO KAJIAN';
         inputTickerVisible.checked = state.tickerVisible !== false;
         inputTickerText.value = state.tickerText || '';
+        setScaleUI(parseFloat(state.elementScale) || 1);
       } else {
         // Load default preset values into inputs
         loadPresetData(defaultPresets[0]);
@@ -714,7 +921,8 @@
         quoteRef: inputQuoteRef.value,
         tickerLabel: inputTickerLabel.value,
         tickerVisible: inputTickerVisible.checked,
-        tickerText: inputTickerText.value
+        tickerText: inputTickerText.value,
+        elementScale: parseFloat(inputScale.value) || 1
       };
       localStorage.setItem('obs_controller_state', JSON.stringify(state));
     }
@@ -733,13 +941,14 @@
       inputTickerLabel.value = preset.tickerLabel || 'INFO KAJIAN';
       inputTickerVisible.checked = preset.tickerVisible !== false;
       inputTickerText.value = preset.tickerText || '';
+      if (preset.elementScale) setScaleUI(preset.elementScale);
       saveState();
     }
 
     // Render presets list
     function renderPresets() {
       presetsContainer.innerHTML = '';
-      
+
       // Merge defaults with customs
       const allPresets = [
         ...defaultPresets.map(p => ({ ...p, isDefault: true })),
@@ -749,18 +958,18 @@
       allPresets.forEach(preset => {
         const item = document.createElement('div');
         item.className = 'preset-item';
-        
+
         const info = document.createElement('div');
         info.className = 'preset-info';
-        
+
         const name = document.createElement('div');
         name.className = 'preset-name';
         name.textContent = preset.name;
-        
+
         const desc = document.createElement('div');
         desc.className = 'preset-desc';
         desc.textContent = `${preset.speaker ? preset.speaker.split(',')[0] : ''} - ${preset.title || ''}`;
-        
+
         info.appendChild(name);
         info.appendChild(desc);
         item.appendChild(info);
@@ -838,7 +1047,7 @@
     }
 
     // --- Action Triggers via HTTP Server API ---
-    
+
     let currentServerState = {
       lowerThirdActive: false,
       tickerActive: true,
@@ -852,8 +1061,42 @@
       tickerLabel: 'INFO KAJIAN',
       tickerVisible: true,
       tickerText: '',
+      elementScale: 1,
       timestamp: 0
     };
+
+    // ─── Scale UI helpers ────────────────────────────────────────
+    function setScaleUI(val) {
+      val = Math.min(3, Math.max(0.5, parseFloat(val) || 1));
+      inputScale.value = val;
+      inputScaleVal.value = val;
+      // Update range fill gradient
+      const pct = ((val - 0.5) / 2.5) * 100;
+      inputScale.style.background =
+        `linear-gradient(90deg, var(--gold-primary) ${pct}%, #2a2a2a ${pct}%)`;
+      // Highlight active preset button
+      scalePresetBtns.forEach(btn => {
+        btn.classList.toggle('active', parseFloat(btn.dataset.val) === val);
+      });
+    }
+
+    // Sync slider ↔ number input
+    inputScale.addEventListener('input', () => {
+      setScaleUI(inputScale.value);
+      sendStateToServer();
+    });
+    inputScaleVal.addEventListener('change', () => {
+      setScaleUI(inputScaleVal.value);
+      sendStateToServer();
+    });
+    scalePresetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        setScaleUI(btn.dataset.val);
+        sendStateToServer();
+      });
+    });
+    // Initialize
+    setScaleUI(1);
 
     async function sendStateToServer() {
       // Build the current state object from inputs
@@ -867,6 +1110,7 @@
       currentServerState.tickerLabel = inputTickerLabel.value;
       currentServerState.tickerVisible = inputTickerVisible.checked;
       currentServerState.tickerText = inputTickerText.value;
+      currentServerState.elementScale = parseFloat(inputScale.value) || 1;
       currentServerState.timestamp = Date.now();
 
       saveState();
@@ -874,9 +1118,7 @@
       try {
         await fetch('/api/state', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(currentServerState)
         });
       } catch (err) {
@@ -911,14 +1153,15 @@
 
     // Auto-save form values on editing
     const allInputs = [
-      inputBadge, inputLive, inputHeaderActive, inputSpeaker, inputTitle, 
-      toggleQuote, inputQuote, inputQuoteRef, 
+      inputBadge, inputLive, inputHeaderActive, inputSpeaker, inputTitle,
+      toggleQuote, inputQuote, inputQuoteRef,
       inputTickerLabel, inputTickerText
     ];
     allInputs.forEach(input => {
       input.addEventListener('input', saveState);
       input.addEventListener('change', saveState);
     });
+    // Scale already wired above
 
     // --- Connectivity check (Polling server to see if overlay is connected) ---
     async function checkOverlayConnection() {
@@ -956,4 +1199,5 @@
     }
   </script>
 </body>
+
 </html>
