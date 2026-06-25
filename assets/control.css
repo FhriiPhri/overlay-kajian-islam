@@ -5,7 +5,8 @@ body.dashboard {
   background-color: #0c0f0e;
   padding: clamp(16px, 3vw, 40px);
   font-family: var(--font-sans);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .dashboard-container {
@@ -13,7 +14,10 @@ body.dashboard {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr minmax(0, 440px);
+  grid-template-rows: auto 1fr;
   gap: clamp(16px, 2vw, 30px);
+  height: 100%;
+  overflow: hidden;
 }
 
 .dashboard-header {
@@ -426,10 +430,8 @@ input:checked+.slider:before {
 .preview-pane {
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 20px;
-  align-self: start;
   min-width: 0;
+  overflow: hidden;
 }
 
 .control-sidebar {
@@ -437,6 +439,9 @@ input:checked+.slider:before {
   flex-direction: column;
   gap: 20px;
   min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
 }
 
 .scale-row {
@@ -659,12 +664,26 @@ input:checked+.slider:before {
 
 /* Tablet landscape — single column, controls get full width */
 @media (max-width: 1100px) {
+  body.dashboard {
+    height: auto;
+    min-height: 100vh;
+    overflow: auto;
+  }
+
   .dashboard-container {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    height: auto;
+    overflow: visible;
   }
 
   .preview-pane {
-    position: static;
+    overflow: visible;
+  }
+
+  .control-sidebar {
+    overflow: visible;
+    padding-right: 0;
   }
 
   .control-sidebar .form-row {
