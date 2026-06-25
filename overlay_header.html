@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Overlay – Header / HUD Atas</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body class="canvas-4k">
+
+  <!-- ▸ SCREEN CORNER ORNAMENTS -->
+  <div id="corner-tl" class="screen-corner">
+    <svg viewBox="0 0 120 120">
+      <path d="M8 112 L8 8 L112 8 M8 28 L28 28 L28 8 M8 48 L48 48 L48 8 M28 48 L48 28" />
+    </svg>
+  </div>
+  <div id="corner-tr" class="screen-corner">
+    <svg viewBox="0 0 120 120">
+      <path d="M8 112 L8 8 L112 8 M8 28 L28 28 L28 8 M8 48 L48 48 L48 8 M28 48 L48 28" />
+    </svg>
+  </div>
+  <div id="corner-bl" class="screen-corner">
+    <svg viewBox="0 0 120 120">
+      <path d="M8 112 L8 8 L112 8 M8 28 L28 28 L28 8 M8 48 L48 48 L48 8 M28 48 L48 28" />
+    </svg>
+  </div>
+  <div id="corner-br" class="screen-corner">
+    <svg viewBox="0 0 120 120">
+      <path d="M8 112 L8 8 L112 8 M8 28 L28 28 L28 8 M8 48 L48 48 L48 8 M28 48 L48 28" />
+    </svg>
+  </div>
+
+  <!-- ▸ TOP-LEFT BRANDING WIDGET -->
+  <div id="hud-left">
+    <div class="hud-card-border">
+      <div class="hud-card-body">
+        <div class="brand-logo-ring">
+          <img src="assets/logo.png" alt="Logo"
+            onerror="this.style.display='none';document.getElementById('brand-logo-fb').style.display='block';">
+          <div id="brand-logo-fb" class="brand-logo-fallback" style="display:none;"></div>
+        </div>
+        <div class="brand-text">
+          <span id="hud-brand-name" class="brand-name">MEDIA KAJIAN ISLAMI</span>
+          <span class="brand-tagline">Masjid Nurul Huda Depok</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ▸ TOP-RIGHT LIVE + CLOCK WIDGET -->
+  <div id="hud-right">
+    <div class="hud-card-border">
+      <div class="hud-card-body">
+        <div id="hud-live-pill" class="live-pill">
+          <div class="live-dot"></div>
+          Siaran Langsung
+        </div>
+        <div class="hud-sep"></div>
+        <div class="clock-block">
+          <span id="hud-date"></span>
+          <span id="hud-time"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── Element refs ─────────────────────────────────────────────
+    const hudLeft = document.getElementById('hud-left');
+    const hudRight = document.getElementById('hud-right');
+    const hudTime = document.getElementById('hud-time');
+    const hudDate = document.getElementById('hud-date');
+    const hudLivePill = document.getElementById('hud-live-pill');
+    const hudBrandName = document.getElementById('hud-brand-name');
+    const corners = document.querySelectorAll('.screen-corner');
+
+    // ─── Live clock ───────────────────────────────────────────────
+    const DAY_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const MON_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    function updateClock() {
+      const now = new Date();
+      hudTime.textContent = now.toTimeString().split(' ')[0];
+      hudDate.textContent = `${DAY_ID[now.getDay()]}, ${now.getDate()} ${MON_ID[now.getMonth()]} ${now.getFullYear()}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ─── State cache for diffing ──────────────────────────────────
+    let prevHeaderActive = null;
+    let prevScale = null;
+    let prevIsLive = null;
+
+    // ─── Apply state ──────────────────────────────────────────────
+    function applyState(state) {
+      // Scale
+      const scale = parseFloat(state.elementScale) || 1;
+      if (scale !== prevScale) {
+        prevScale = scale;
+        document.documentElement.style.setProperty('--element-scale', scale);
+      }
+
+      // Header visibility
+      const active = state.headerActive !== false;
+      if (active !== prevHeaderActive) {
+        prevHeaderActive = active;
+        [hudLeft, hudRight].forEach(w => w.classList.toggle('active', active));
+        corners.forEach(c => c.classList.toggle('active', active));
+      }
+
+      // Live badge
+      const isLive = state.isLive !== false;
+      if (isLive !== prevIsLive) {
+        prevIsLive = isLive;
+        hudLivePill.style.display = isLive ? 'flex' : 'none';
+      }
+
+      // Brand name
+      if (state.brandName && hudBrandName.textContent !== state.brandName) {
+        hudBrandName.textContent = state.brandName;
+      }
+    }
+
+    // ─── Polling /api/state ───────────────────────────────────────
+    async function poll() {
+      try {
+        const res = await fetch('/api/state?client=overlay_header');
+        if (!res.ok) return;
+        const state = await res.json();
+        applyState(state);
+      } catch (e) {
+        // Server not running yet
+      }
+    }
+
+    setInterval(poll, 250);
+    poll();
+  </script>
+</body>
+
+</html>

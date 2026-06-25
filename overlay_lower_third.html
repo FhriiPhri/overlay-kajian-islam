@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Overlay – Lower Third</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body class="canvas-4k">
+
+  <!-- ▸ LOWER THIRD -->
+  <div id="lower-third">
+    <div class="lt-border">
+      <div class="lt-inner">
+        <!-- Corner ornaments -->
+        <svg class="lt-corner tl" viewBox="0 0 70 70">
+          <path d="M5 65 L5 5 L65 5 M5 20 L20 20 L20 5 M5 35 L35 35 L35 5 M20 35 L35 20" />
+        </svg>
+        <svg class="lt-corner tr" viewBox="0 0 70 70">
+          <path d="M5 65 L5 5 L65 5 M5 20 L20 20 L20 5 M5 35 L35 35 L35 5 M20 35 L35 20" />
+        </svg>
+        <svg class="lt-corner bl" viewBox="0 0 70 70">
+          <path d="M5 65 L5 5 L65 5 M5 20 L20 20 L20 5 M5 35 L35 35 L35 5 M20 35 L35 20" />
+        </svg>
+        <svg class="lt-corner br" viewBox="0 0 70 70">
+          <path d="M5 65 L5 5 L65 5 M5 20 L20 20 L20 5 M5 35 L35 35 L35 5 M20 35 L35 20" />
+        </svg>
+
+        <!-- Logo circle -->
+        <div class="lt-logo-ring">
+          <img src="assets/logo.png" alt="Logo"
+            onerror="this.style.display='none';document.getElementById('lt-logo-fb').style.display='block';">
+          <div id="lt-logo-fb" class="lt-logo-fallback" style="display:none;"></div>
+          <div class="lt-logo-inner-ring"></div>
+        </div>
+
+        <!-- Text details -->
+        <div class="lt-text">
+          <div class="lt-badges">
+            <span id="lt-badge" class="lt-cat-badge">KAJIAN ISLAMI</span>
+            <span id="lt-live" class="lt-live-badge">LIVE</span>
+          </div>
+          <div id="lt-speaker" class="lt-speaker">Ustadz Dr. Khalid Basalamah, Lc., M.A.</div>
+          <div id="lt-title" class="lt-title">Sebab-Sebab Lapang Dada</div>
+          <div id="lt-quote" class="lt-quote">
+            <div id="lt-quote-text" class="lt-quote-text">"Bukankah Kami telah melapangkan dadamu?"</div>
+            <div id="lt-quote-ref" class="lt-quote-ref">QS. Asy-Syarh: 1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── Element refs ─────────────────────────────────────────────
+    const lowerThird = document.getElementById('lower-third');
+    const ltBadge = document.getElementById('lt-badge');
+    const ltLive = document.getElementById('lt-live');
+    const ltSpeaker = document.getElementById('lt-speaker');
+    const ltTitle = document.getElementById('lt-title');
+    const ltQuoteBox = document.getElementById('lt-quote');
+    const ltQuoteText = document.getElementById('lt-quote-text');
+    const ltQuoteRef = document.getElementById('lt-quote-ref');
+
+    // ─── Text fade helper ─────────────────────────────────────────
+    function fadeTo(el, text) {
+      if (el.textContent === text) return;
+      el.style.opacity = '0';
+      setTimeout(() => { el.textContent = text; el.style.opacity = '1'; }, 250);
+    }
+
+    // ─── State cache for diffing ──────────────────────────────────
+    const prev = {
+      lowerThirdActive: null,
+      speaker: null,
+      title: null,
+      badge: null,
+      isLive: null,
+      quote: null,
+      quoteRef: null,
+    };
+    let prevScale = null;
+
+    // ─── Apply state ──────────────────────────────────────────────
+    function applyState(state) {
+      // Scale
+      const scale = parseFloat(state.elementScale) || 1;
+      if (scale !== prevScale) {
+        prevScale = scale;
+        document.documentElement.style.setProperty('--element-scale', scale);
+      }
+
+      // Lower Third visibility & content
+      const ltActive = !!state.lowerThirdActive;
+
+      if (!ltActive) {
+        if (prev.lowerThirdActive !== false) {
+          lowerThird.classList.remove('active');
+          prev.lowerThirdActive = false;
+        }
+        return;
+      }
+
+      const changed =
+        ltActive !== prev.lowerThirdActive ||
+        state.speaker !== prev.speaker ||
+        state.title !== prev.title ||
+        state.badge !== prev.badge ||
+        state.isLive !== prev.isLive ||
+        state.quote !== prev.quote ||
+        state.quoteRef !== prev.quoteRef;
+
+      if (!changed) return;
+
+      prev.lowerThirdActive = true;
+      prev.speaker = state.speaker;
+      prev.title = state.title;
+      prev.badge = state.badge;
+      prev.isLive = state.isLive;
+      prev.quote = state.quote;
+      prev.quoteRef = state.quoteRef;
+
+      fadeTo(ltSpeaker, state.speaker || '');
+      fadeTo(ltTitle, state.title || '');
+
+      if ((state.badge || 'KAJIAN ISLAMI') !== ltBadge.textContent) {
+        ltBadge.textContent = state.badge || 'KAJIAN ISLAMI';
+      }
+
+      ltLive.style.display = state.isLive ? 'flex' : 'none';
+
+      if (state.quote) {
+        const qText = `"${state.quote}"`;
+        if (ltQuoteText.textContent !== qText) ltQuoteText.textContent = qText;
+        if (ltQuoteRef.textContent !== (state.quoteRef || '')) ltQuoteRef.textContent = state.quoteRef || '';
+        ltQuoteBox.classList.add('active');
+      } else {
+        ltQuoteBox.classList.remove('active');
+      }
+
+      lowerThird.classList.add('active');
+    }
+
+    // ─── Polling /api/state ───────────────────────────────────────
+    async function poll() {
+      try {
+        const res = await fetch('/api/state?client=overlay_lt');
+        if (!res.ok) return;
+        const state = await res.json();
+        applyState(state);
+      } catch (e) {
+        // Server not running yet
+      }
+    }
+
+    setInterval(poll, 250);
+    poll();
+  </script>
+</body>
+
+</html>

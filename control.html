@@ -6,644 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kajian Islami - OBS Live Controller</title>
   <link rel="stylesheet" href="assets/style.css">
-  <style>
-    body {
-      background-color: #0c0f0e;
-      padding: 40px;
-      font-family: var(--font-sans);
-      min-height: 100vh;
-    }
-
-    /* Main Container Grid */
-    .dashboard-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 480px;
-      gap: 30px;
-    }
-
-    /* Header Section */
-    .dashboard-header {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 10px;
-    }
-
-    .header-title-area {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .header-logo {
-      width: 45px;
-      height: 45px;
-      background: var(--gold-gradient);
-      mask: url('assets/pattern.svg') no-repeat center/contain;
-      -webkit-mask: url('assets/pattern.svg') no-repeat center/contain;
-    }
-
-    .dashboard-header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text-light);
-      letter-spacing: 0.5px;
-    }
-
-    .dashboard-header h1 span {
-      background: var(--gold-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    /* Connection Status Badge */
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #1a1e1c;
-      border: 1px solid var(--border-color);
-      padding: 8px 16px;
-      border-radius: var(--border-radius-sm);
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #ef4444;
-      /* Default disconnected */
-      box-shadow: 0 0 8px #ef4444;
-      transition: background 0.3s, box-shadow 0.3s;
-    }
-
-    .status-dot.connected {
-      background: #10b981;
-      box-shadow: 0 0 10px #10b981;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--border-radius);
-      padding: 30px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-      position: relative;
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-gold);
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      padding-bottom: 10px;
-    }
-
-    /* Input Styling */
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    input[type="text"],
-    textarea,
-    select {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      color: var(--text-light);
-      padding: 12px 16px;
-      font-size: 15px;
-      border-radius: var(--border-radius-sm);
-      outline: none;
-      font-family: var(--font-sans);
-      transition: border-color 0.25s, box-shadow 0.25s;
-    }
-
-    input[type="text"]:focus,
-    textarea:focus,
-    select:focus {
-      border-color: var(--gold-primary);
-      box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    /* Toggle Switches */
-    .switch-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      user-select: none;
-      margin-top: 5px;
-    }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #333;
-      transition: .3s;
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-    }
-
-    input:checked+.slider {
-      background-color: var(--primary-emerald-light);
-    }
-
-    input:checked+.slider:before {
-      transform: translateX(20px);
-    }
-
-    .switch-label {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-light);
-    }
-
-    /* Buttons Panel */
-    .action-panel {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-      margin-top: 30px;
-    }
-
-    .btn {
-      padding: 14px 20px;
-      font-size: 15px;
-      font-weight: 700;
-      border: none;
-      border-radius: var(--border-radius-sm);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-family: var(--font-sans);
-      transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .btn:active {
-      transform: scale(0.97);
-    }
-
-    .btn-primary {
-      background: var(--gold-gradient);
-      color: var(--bg-dark);
-      box-shadow: var(--gold-glow);
-    }
-
-    .btn-primary:hover {
-      filter: brightness(1.1);
-    }
-
-    .btn-success {
-      background: var(--bg-emerald-gradient);
-      color: var(--text-light);
-      border: 1px solid var(--gold-primary);
-      box-shadow: 0 0 15px rgba(5, 62, 38, 0.4);
-    }
-
-    .btn-success:hover {
-      background: var(--primary-emerald-light);
-    }
-
-    .btn-danger {
-      background: #7f1d1d;
-      color: var(--text-light);
-      border: 1px solid #ef4444;
-    }
-
-    .btn-danger:hover {
-      background: #991b1b;
-    }
-
-    .btn-secondary {
-      background: #262626;
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-    }
-
-    .btn-secondary:hover {
-      color: var(--text-light);
-      border-color: #555;
-    }
-
-    .btn-span-2 {
-      grid-column: span 2;
-    }
-
-    /* Live Preview Section */
-    .preview-box {
-      width: 480px;
-      height: 270px;
-      background: #111;
-      border: 2px dashed var(--border-color);
-      border-radius: var(--border-radius-sm);
-      overflow: hidden;
-      position: relative;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
-    }
-
-    .preview-iframe {
-      width: 3840px;
-      height: 2160px;
-      border: none;
-      transform: scale(0.125);
-      transform-origin: top left;
-      pointer-events: none;
-      background: transparent;
-    }
-
-    .preview-label {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.8);
-      color: var(--text-gold);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: 1px solid var(--gold-dark);
-      z-index: 10;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    /* Preset & Library Section */
-    .preset-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 250px;
-      overflow-y: auto;
-      margin-top: 15px;
-      padding-right: 5px;
-    }
-
-    .preset-item {
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      padding: 12px 15px;
-      border-radius: var(--border-radius-sm);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: border-color 0.2s, background 0.2s;
-      cursor: pointer;
-    }
-
-    .preset-item:hover {
-      border-color: var(--gold-primary);
-      background: #2a2a2a;
-    }
-
-    .preset-info {
-      flex: 1;
-    }
-
-    .preset-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-light);
-    }
-
-    .preset-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .preset-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 5px;
-      border-radius: 4px;
-      color: var(--text-muted);
-      transition: color 0.2s, background 0.2s;
-    }
-
-    .icon-btn:hover {
-      color: var(--text-light);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .icon-btn-delete:hover {
-      color: #ef4444;
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .library-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-    }
-
-    .library-header h3 {
-      font-size: 15px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* Right column stacking */
-    .right-column {
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-    }
-
-    /* Scale Slider */
-    .scale-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      background: rgba(212, 175, 55, .07);
-      border: 1px solid rgba(212, 175, 55, .2);
-      border-radius: var(--border-radius-sm);
-      margin-top: 4px;
-    }
-
-    .scale-row label {
-      min-width: 130px;
-      margin: 0;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-
-    .scale-range {
-      flex: 1;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 6px;
-      border-radius: 4px;
-      background: linear-gradient(90deg, var(--gold-primary) 0%, #2a2a2a 0%);
-      outline: none;
-      cursor: pointer;
-      transition: background .2s;
-    }
-
-    .scale-range::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--gold-gradient);
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(212, 175, 55, .5);
-      border: 2px solid #000;
-      transition: transform .15s;
-    }
-
-    .scale-range::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-    }
-
-    .scale-range::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--gold-gradient);
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(212, 175, 55, .5);
-      border: 2px solid #000;
-    }
-
-    .scale-value-box {
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      color: var(--text-gold);
-      font-size: 16px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      text-align: center;
-      width: 68px;
-      padding: 6px 8px;
-      border-radius: var(--border-radius-sm);
-      outline: none;
-      transition: border-color .2s;
-    }
-
-    .scale-value-box:focus {
-      border-color: var(--gold-primary);
-    }
-
-    .scale-presets {
-      display: flex;
-      gap: 6px;
-    }
-
-    .scale-preset-btn {
-      background: #1a1a1a;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: border-color .2s, color .2s;
-      font-family: var(--font-sans);
-    }
-
-    .scale-preset-btn:hover,
-    .scale-preset-btn.active {
-      border-color: var(--gold-primary);
-      color: var(--gold-primary);
-    }
-
-    /* Responsive */
-    @media (max-width: 1100px) {
-      .dashboard-container {
-        grid-template-columns: 1fr;
-      }
-
-      .right-column {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 700px) {
-      body {
-        padding: 16px;
-      }
-
-      .dashboard-container {
-        gap: 16px;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-
-      .action-panel {
-        grid-template-columns: 1fr;
-      }
-
-      .btn-span-2 {
-        grid-column: span 1;
-      }
-
-      .right-column {
-        grid-template-columns: 1fr;
-      }
-
-      .scale-row {
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .scale-presets {
-        flex-wrap: wrap;
-      }
-    }
-
-    /* ── TAB NAVIGATION ─────────────────────────────── */
-    .tab-nav {
-      grid-column: 1 / -1;
-      display: flex;
-      gap: 0;
-      border-bottom: 2px solid var(--border-color);
-      margin-top: -10px;
-      margin-bottom: 0;
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      border-bottom: 3px solid transparent;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 700;
-      font-family: var(--font-sans);
-      padding: 12px 24px;
-      cursor: pointer;
-      letter-spacing: .8px;
-      text-transform: uppercase;
-      transition: color .2s, border-color .2s;
-      margin-bottom: -2px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tab-btn:hover {
-      color: var(--text-light);
-    }
-
-    .tab-btn.active {
-      color: var(--gold-primary);
-      border-bottom-color: var(--gold-primary);
-    }
-
-    .left-column {
-      min-width: 0;
-    }
-
-    .tab-panel {
-      display: none;
-    }
-
-    .tab-panel.active {
-      display: block;
-    }
-
-    .preview-tab {
-      display: none;
-    }
-
-    .preview-tab.active {
-      display: block;
-    }
-  </style>
 </head>
 
-<body>
+<body class="dashboard">
 
   <div class="dashboard-container">
+
     <!-- File Warning Banner -->
     <div id="file-warning-banner"
-      style="display: none; background: rgba(127, 29, 29, 0.9); border: 2px solid #ef4444; color: #ffdddd; padding: 20px; border-radius: var(--border-radius); text-align: center; font-weight: 700; grid-column: 1 / -1; margin-bottom: 10px; box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); font-size: 16px;">
+      style="display:none; background:rgba(127,29,29,.9); border:2px solid #ef4444; color:#ffdddd; padding:20px; border-radius:var(--border-radius); text-align:center; font-weight:700; grid-column:1/-1; margin-bottom:10px; box-shadow:0 0 20px rgba(239,68,68,.2); font-size:16px;">
       ⚠️ PERINGATAN: Anda membuka file langsung dari browser (Protokol File).<br>
-      <span style="font-weight: 400; font-size: 14px; color: #bbbbbb; margin-top: 5px; display: inline-block;">
-        Hubungan real-time dengan OBS tidak akan berfungsi. Silakan tutup tab ini, lalu jalankan file <strong
-          style="color: var(--gold-light);">start.bat</strong> di folder Anda untuk memulai server local dengan benar.
+      <span style="font-weight:400; font-size:14px; color:#bbb; margin-top:5px; display:inline-block;">
+        Hubungan real-time dengan OBS tidak akan berfungsi. Silakan jalankan <strong
+          style="color:var(--gold-light);">start.bat</strong> terlebih dahulu.
       </span>
     </div>
 
@@ -661,14 +36,20 @@
 
     <!-- Tab Navigation -->
     <nav class="tab-nav">
-      <button class="tab-btn active" id="tab-btn-lt" data-tab="tab-lowerthird">
+      <button class="tab-btn active" data-tab="tab-lowerthird">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
           <path
             d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
         </svg>
         Lower Third
       </button>
-      <button class="tab-btn" id="tab-btn-wt" data-tab="tab-waiting">
+      <button class="tab-btn" data-tab="tab-runningtext">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z" />
+        </svg>
+        Running Text
+      </button>
+      <button class="tab-btn" data-tab="tab-waiting">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
           <path
             d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" />
@@ -677,10 +58,10 @@
       </button>
     </nav>
 
-    <!-- Left Column (tab panels) -->
+    <!-- Left Column -->
     <div class="left-column">
 
-      <!-- TAB 1: Lower Third -->
+      <!-- ═══ TAB 1: LOWER THIRD ═══ -->
       <div id="tab-lowerthird" class="tab-panel active">
         <main class="card">
           <h2 class="card-title">
@@ -698,20 +79,16 @@
                 <input type="text" id="input-badge" placeholder="Contoh: KAJIAN ISLAMI">
               </div>
               <div class="form-group"
-                style="display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding-bottom: 5px;">
+                style="display:flex; flex-direction:column; justify-content:flex-end; gap:10px; padding-bottom:5px;">
                 <label class="switch-container">
-                  <span class="switch">
-                    <input type="checkbox" id="input-live" checked>
-                    <span class="slider"></span>
-                  </span>
+                  <span class="switch"><input type="checkbox" id="input-live" checked><span
+                      class="slider"></span></span>
                   <span class="switch-label">Tampilkan Label "LIVE"</span>
                 </label>
                 <label class="switch-container">
-                  <span class="switch">
-                    <input type="checkbox" id="input-header-active" checked>
-                    <span class="slider"></span>
-                  </span>
-                  <span class="switch-label">Tampilkan HUD Atas (Logo & Jam)</span>
+                  <span class="switch"><input type="checkbox" id="input-header-active" checked><span
+                      class="slider"></span></span>
+                  <span class="switch-label">Tampilkan HUD Atas (Logo &amp; Jam)</span>
                 </label>
               </div>
             </div>
@@ -726,19 +103,15 @@
               <input type="text" id="input-title" placeholder="Contoh: Sebab-Sebab Lapang Dada">
             </div>
 
-            <!-- Mutiara Ayat / Hadits Collapsible Section -->
-            <div style="border-top: 1px dashed var(--border-color); margin: 25px 0 15px; padding-top: 15px;">
-              <label class="switch-container" style="margin-bottom: 15px;">
-                <span class="switch">
-                  <input type="checkbox" id="toggle-quote-enable">
-                  <span class="slider"></span>
-                </span>
-                <span class="switch-label" style="font-weight: 700; color: var(--text-gold);">Sertakan Mutiara Ayat /
+            <!-- Mutiara Ayat / Hadits -->
+            <div style="border-top:1px dashed var(--border-color); margin:25px 0 15px; padding-top:15px;">
+              <label class="switch-container" style="margin-bottom:15px;">
+                <span class="switch"><input type="checkbox" id="toggle-quote-enable"><span class="slider"></span></span>
+                <span class="switch-label" style="font-weight:700; color:var(--text-gold);">Sertakan Mutiara Ayat /
                   Hadits</span>
               </label>
             </div>
-
-            <div id="quote-fields" style="display: none;">
+            <div id="quote-fields" style="display:none;">
               <div class="form-group">
                 <label for="input-quote">Isi Kutipan (Ayat / Hadits)</label>
                 <textarea id="input-quote"
@@ -750,41 +123,11 @@
               </div>
             </div>
 
-            <!-- Running Text Ticker Section -->
-            <div style="border-top: 1px dashed var(--border-color); margin: 25px 0 15px; padding-top: 15px;">
+            <!-- Overlay Scale -->
+            <div style="border-top:1px dashed var(--border-color); margin:25px 0 15px; padding-top:15px;">
               <h3
-                style="font-size: 14px; font-weight: 700; color: var(--text-gold); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
-                Running Text / Ticker</h3>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="input-ticker-label">Label Ticker</label>
-                <input type="text" id="input-ticker-label" placeholder="Contoh: INFO KAJIAN">
-              </div>
-              <div class="form-group" style="display: flex; align-items: flex-end; padding-bottom: 12px;">
-                <label class="switch-container">
-                  <span class="switch">
-                    <input type="checkbox" id="input-ticker-visible" checked>
-                    <span class="slider"></span>
-                  </span>
-                  <span class="switch-label">Tampilkan Running Text</span>
-                </label>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="input-ticker-text">Konten Running Text</label>
-              <textarea id="input-ticker-text"
-                placeholder="Masukkan pengumuman atau teks berjalan di sini..."></textarea>
-            </div>
-
-            <!-- Pengaturan Overlay Scale -->
-            <div style="border-top: 1px dashed var(--border-color); margin: 25px 0 15px; padding-top: 15px;">
-              <h3
-                style="font-size: 14px; font-weight: 700; color: var(--text-gold); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
-                ⚙️ Pengaturan Ukuran Overlay (Scale)
-              </h3>
+                style="font-size:14px; font-weight:700; color:var(--text-gold); margin-bottom:15px; text-transform:uppercase; letter-spacing:.5px;">
+                ⚙️ Pengaturan Ukuran Overlay (Scale)</h3>
               <div class="scale-row">
                 <label for="input-scale">Skala Elemen</label>
                 <input type="range" id="input-scale" class="scale-range" min="0.5" max="3" step="0.05" value="1">
@@ -831,7 +174,71 @@
         </main>
       </div><!-- /#tab-lowerthird -->
 
-      <!-- TAB 2: Waiting Scene -->
+      <!-- ═══ TAB 2: RUNNING TEXT ═══ -->
+      <div id="tab-runningtext" class="tab-panel">
+        <main class="card">
+          <h2 class="card-title">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z" />
+            </svg>
+            Pengaturan Running Text / Ticker
+          </h2>
+
+          <div class="note-box">
+            ℹ️ Perubahan di sini berlaku untuk <strong style="color:var(--text-gold);">semua overlay sekaligus</strong>:
+            <code>running_text.html</code>, <code>output.html</code>, <code>overlay_lower_third.html</code>, dan
+            <code>waiting.html</code>.
+          </div>
+
+          <form id="rt-form" onsubmit="event.preventDefault();">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="rt-label">Label Ticker</label>
+                <input type="text" id="rt-label" placeholder="Contoh: INFO KAJIAN">
+              </div>
+              <div class="form-group" style="display:flex; align-items:flex-end; padding-bottom:12px;">
+                <label class="switch-container">
+                  <span class="switch"><input type="checkbox" id="rt-visible" checked><span
+                      class="slider"></span></span>
+                  <span class="switch-label">Tampilkan Running Text</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="rt-text">Konten Running Text</label>
+              <textarea id="rt-text" style="min-height:120px;"
+                placeholder="Masukkan pengumuman atau teks berjalan di sini..."></textarea>
+            </div>
+
+            <div class="action-panel">
+              <button type="button" id="rt-btn-show" class="btn btn-success btn-span-2">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+                </svg>
+                Tampilkan Running Text
+              </button>
+              <button type="button" id="rt-btn-update" class="btn btn-primary">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z" />
+                </svg>
+                Perbarui Live
+              </button>
+              <button type="button" id="rt-btn-hide" class="btn btn-danger">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 11H9v2H7V9h6c1.66 0 3 1.34 3 3s-1.34 3-3 3h-1v-2z" />
+                </svg>
+                Sembunyikan
+              </button>
+            </div>
+          </form>
+        </main>
+      </div><!-- /#tab-runningtext -->
+
+      <!-- ═══ TAB 3: WAITING SCENE ═══ -->
       <div id="tab-waiting" class="tab-panel">
         <main class="card">
           <h2 class="card-title">
@@ -843,8 +250,6 @@
           </h2>
 
           <form id="waiting-form" onsubmit="event.preventDefault();">
-
-            <!-- Brand -->
             <h3
               style="font-size:14px;font-weight:700;color:var(--text-gold);margin-bottom:15px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px dashed var(--border-color);padding-bottom:10px;">
               🕌 Brand / Channel</h3>
@@ -859,7 +264,6 @@
               </div>
             </div>
 
-            <!-- Info Kajian -->
             <h3
               style="font-size:14px;font-weight:700;color:var(--text-gold);margin:20px 0 15px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px dashed var(--border-color);padding-bottom:10px;">
               📖 Info Kajian</h3>
@@ -876,7 +280,6 @@
               <input type="text" id="wt-speaker" placeholder="Contoh: Ustadz Dr. Khalid Basalamah, Lc., M.A.">
             </div>
 
-            <!-- Jadwal -->
             <h3
               style="font-size:14px;font-weight:700;color:var(--text-gold);margin:20px 0 15px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px dashed var(--border-color);padding-bottom:10px;">
               🕐 Jadwal &amp; Lokasi</h3>
@@ -891,7 +294,6 @@
               </div>
             </div>
 
-            <!-- Countdown -->
             <h3
               style="font-size:14px;font-weight:700;color:var(--text-gold);margin:20px 0 15px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px dashed var(--border-color);padding-bottom:10px;">
               ⏱ Countdown Timer</h3>
@@ -899,12 +301,10 @@
               <label for="wt-target">Target Waktu Mulai</label>
               <input type="datetime-local" id="wt-target" style="color-scheme:dark;">
             </div>
-            <p style="font-size:12px;color:var(--text-muted);margin-top:-12px;margin-bottom:20px;">
-              ℹ️ Kosongkan untuk countdown 30 menit dari sekarang.
-              <strong style="color:var(--text-gold);">Running Text</strong> otomatis diambil dari tab Lower Third.
-            </p>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:-12px;margin-bottom:20px;">ℹ️ Kosongkan untuk
+              countdown 30 menit dari sekarang. <strong style="color:var(--text-gold);">Running Text</strong> otomatis
+              diambil dari tab Running Text.</p>
 
-            <!-- Actions -->
             <div class="action-panel">
               <button type="button" id="wt-btn-update" class="btn btn-success btn-span-2">
                 <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
@@ -920,26 +320,33 @@
 
     </div><!-- /.left-column -->
 
-    <!-- Right Side: Live Preview & Library Presets -->
+    <!-- Right Column: Preview + Presets -->
     <div class="right-column">
 
       <!-- Live Preview -->
-      <section class="card" style="padding: 20px;">
-        <h2 class="card-title" style="margin-bottom: 15px;">
+      <section class="card" style="padding:20px;">
+        <h2 class="card-title" style="margin-bottom:15px;">
           <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
             <path
               d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z" />
           </svg>
           Live Render Monitor
         </h2>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+          <button class="preview-sel-btn active" data-src="output.html" data-lbl="FULL OVERLAY">Full</button>
+          <button class="preview-sel-btn" data-src="overlay_header.html" data-lbl="HEADER ONLY">Header</button>
+          <button class="preview-sel-btn" data-src="overlay_lower_third.html" data-lbl="LOWER THIRD">Lower
+            Third</button>
+          <button class="preview-sel-btn" data-src="running_text.html" data-lbl="RUNNING TEXT">Running Text</button>
+          <button class="preview-sel-btn" data-src="waiting.html" data-lbl="WAITING SCENE">Waiting</button>
+        </div>
         <div class="preview-box">
-          <span class="preview-label" id="preview-label-text">LOWER THIRD PREVIEW</span>
-          <iframe id="preview-frame" class="preview-iframe preview-tab active" src="output.html"></iframe>
-          <iframe id="preview-frame-waiting" class="preview-iframe preview-tab" src="waiting.html"></iframe>
+          <span class="preview-label" id="preview-label-text">FULL OVERLAY</span>
+          <iframe id="preview-frame" class="preview-iframe" src="output.html"></iframe>
         </div>
       </section>
 
-      <!-- Preset Libraries -->
+      <!-- Preset Library -->
       <section class="card">
         <h2 class="card-title">
           <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
@@ -948,59 +355,48 @@
           </svg>
           Perpustakaan Tema
         </h2>
-
-        <div style="display: flex; gap: 10px;">
-          <input type="text" id="preset-save-name" placeholder="Nama Preset Baru" style="flex: 1;">
-          <button type="button" id="btn-save-preset" class="btn btn-secondary" style="padding: 0 15px;">
-            Simpan
-          </button>
+        <div style="display:flex; gap:10px;">
+          <input type="text" id="preset-save-name" placeholder="Nama Preset Baru" style="flex:1;">
+          <button type="button" id="btn-save-preset" class="btn btn-secondary" style="padding:0 15px;">Simpan</button>
         </div>
-
         <div class="library-header">
           <h3>Preset Tersimpan</h3>
         </div>
-
-        <div id="presets-container" class="preset-list">
-          <!-- Dynamically filled -->
-        </div>
+        <div id="presets-container" class="preset-list"></div>
       </section>
 
-    </div>
+    </div><!-- /.right-column -->
 
-  </div>
+  </div><!-- /.dashboard-container -->
 
   <script>
-    // Elements references
+    // ── Element Refs ─────────────────────────────────────────────
+    // Lower Third
     const inputBadge = document.getElementById('input-badge');
     const inputLive = document.getElementById('input-live');
+    const inputHeaderActive = document.getElementById('input-header-active');
     const inputSpeaker = document.getElementById('input-speaker');
     const inputTitle = document.getElementById('input-title');
     const toggleQuote = document.getElementById('toggle-quote-enable');
     const quoteFields = document.getElementById('quote-fields');
     const inputQuote = document.getElementById('input-quote');
     const inputQuoteRef = document.getElementById('input-quote-ref');
-    const inputTickerLabel = document.getElementById('input-ticker-label');
-    const inputTickerVisible = document.getElementById('input-ticker-visible');
-    const inputTickerText = document.getElementById('input-ticker-text');
-    const inputHeaderActive = document.getElementById('input-header-active');
     const inputScale = document.getElementById('input-scale');
     const inputScaleVal = document.getElementById('input-scale-val');
     const scalePresetBtns = document.querySelectorAll('.scale-preset-btn');
-
     const btnShow = document.getElementById('btn-show');
     const btnUpdate = document.getElementById('btn-update');
     const btnHide = document.getElementById('btn-hide');
-    const btnSavePreset = document.getElementById('btn-save-preset');
-    const presetSaveName = document.getElementById('preset-save-name');
-    const presetsContainer = document.getElementById('presets-container');
 
-    const connectionDot = document.getElementById('connection-dot');
-    const connectionStatus = document.getElementById('connection-status');
-    const previewFrame = document.getElementById('preview-frame');
-    const previewFrameWaiting = document.getElementById('preview-frame-waiting');
-    const previewLabelText = document.getElementById('preview-label-text');
+    // Running Text tab
+    const rtLabel = document.getElementById('rt-label');
+    const rtVisible = document.getElementById('rt-visible');
+    const rtText = document.getElementById('rt-text');
+    const rtBtnShow = document.getElementById('rt-btn-show');
+    const rtBtnUpdate = document.getElementById('rt-btn-update');
+    const rtBtnHide = document.getElementById('rt-btn-hide');
 
-    // Waiting Scene form elements
+    // Waiting Scene
     const wtBrandName = document.getElementById('wt-brand-name');
     const wtBrandTagline = document.getElementById('wt-brand-tagline');
     const wtBadge = document.getElementById('wt-badge');
@@ -1011,383 +407,287 @@
     const wtTarget = document.getElementById('wt-target');
     const wtBtnUpdate = document.getElementById('wt-btn-update');
 
-    // Setup BroadcastChannel
-    const channel = new BroadcastChannel('obs_lower_third');
+    // UI
+    const connectionDot = document.getElementById('connection-dot');
+    const connectionStatus = document.getElementById('connection-status');
+    const previewFrame = document.getElementById('preview-frame');
+    const previewLabelText = document.getElementById('preview-label-text');
+    const presetsContainer = document.getElementById('presets-container');
+    const presetSaveName = document.getElementById('preset-save-name');
+    const btnSavePreset = document.getElementById('btn-save-preset');
 
-    // Default Islamic Presets
+    // ── Default Presets ──────────────────────────────────────────
     const defaultPresets = [
       {
         name: "Ustadz Khalid - Lapang Dada",
-        badge: "KAJIAN ISLAMI",
-        isLive: true,
+        badge: "KAJIAN ISLAMI", isLive: true,
         speaker: "Ustadz Dr. Khalid Basalamah, Lc., M.A.",
         title: "Sebab-Sebab Lapang Dada",
         quoteEnabled: true,
         quote: "Bukankah Kami telah melapangkan dadamu (Muhammad)?",
         quoteRef: "QS. Asy-Syarh: 1",
-        tickerLabel: "MUTIARA AYAT",
-        tickerVisible: true,
+        tickerLabel: "MUTIARA AYAT", tickerVisible: true,
         tickerText: "QS. Asy-Syarh: 1-4 | Bukankah Kami telah melapangkan dadamu? Dan Kami pun telah menurunkan bebanmu yang memberatkan punggungmu..."
       },
       {
         name: "Ustadz Adi Hidayat - Ilmu",
-        badge: "TAFSIR AL-QUR'AN",
-        isLive: true,
+        badge: "TAFSIR AL-QUR'AN", isLive: true,
         speaker: "Ustadz Adi Hidayat, Lc., M.A.",
         title: "Kewajiban Menuntut Ilmu Agama",
         quoteEnabled: true,
         quote: "Niscaya Allah akan meninggikan orang-orang yang beriman di antaramu dan orang-orang yang diberi ilmu pengetahuan beberapa derajat.",
         quoteRef: "QS. Al-Mujadilah: 11",
-        tickerLabel: "HADITS NABI",
-        tickerVisible: true,
-        tickerText: "Barangsiapa menempuh suatu jalan untuk mencari ilmu, maka Allah eksklusif mudahkan jalannya menuju Surga. (HR. Muslim)"
+        tickerLabel: "HADITS NABI", tickerVisible: true,
+        tickerText: "Barangsiapa menempuh suatu jalan untuk mencari ilmu, maka Allah mudahkan jalannya menuju Surga. (HR. Muslim)"
       },
       {
         name: "Pengumuman Umum",
-        badge: "LIVE STREAM",
-        isLive: false,
+        badge: "LIVE STREAM", isLive: false,
         speaker: "Selamat Datang di Majelis Ilmu",
         title: "Mari Jaga Adab & Ketertiban Bersama",
-        quoteEnabled: false,
-        quote: "",
-        quoteRef: "",
-        tickerLabel: "MAKLUMAT",
-        tickerVisible: true,
-        tickerText: "Bagi para jemaah online, silakan mencatat materi kajian dan menonaktifkan suara mikrofon jika berada di ruang interaktif. Semoga bermanfaat."
+        quoteEnabled: false, quote: "", quoteRef: "",
+        tickerLabel: "MAKLUMAT", tickerVisible: true,
+        tickerText: "Bagi para jemaah online, silakan mencatat materi kajian dan menonaktifkan suara mikrofon. Semoga bermanfaat."
       }
     ];
 
     let customPresets = [];
 
-    // Toggle Quote Fields visibility
-    toggleQuote.addEventListener('change', () => {
-      quoteFields.style.display = toggleQuote.checked ? 'block' : 'none';
-    });
+    // ── Server state ─────────────────────────────────────────────
+    let srv = {
+      lowerThirdActive: false,
+      badge: '', isLive: true, headerActive: true,
+      speaker: '', title: '', quote: '', quoteRef: '',
+      tickerLabel: 'INFO KAJIAN', tickerVisible: true, tickerText: '',
+      elementScale: 1,
+      brandName: '', brandTagline: '',
+      kajianBadge: '', kajianTitle: '', kajianSpeaker: '',
+      kjmTime: '', kjmLoc: '', waitingTarget: '',
+      timestamp: 0
+    };
 
-    // Load initial values from localStorage or defaults
-    function loadState() {
-      const savedState = localStorage.getItem('obs_controller_state');
-      if (savedState) {
-        const state = JSON.parse(savedState);
-        inputBadge.value = state.badge || '';
-        inputLive.checked = state.isLive !== false;
-        inputHeaderActive.checked = state.headerActive !== false;
-        inputSpeaker.value = state.speaker || '';
-        inputTitle.value = state.title || '';
-        toggleQuote.checked = !!state.quoteEnabled;
+    // ── Scale UI ─────────────────────────────────────────────────
+    function setScaleUI(val) {
+      val = Math.min(3, Math.max(0.5, parseFloat(val) || 1));
+      inputScale.value = val;
+      inputScaleVal.value = val;
+      const pct = ((val - 0.5) / 2.5) * 100;
+      inputScale.style.background = `linear-gradient(90deg, var(--gold-primary) ${pct}%, #2a2a2a ${pct}%)`;
+      scalePresetBtns.forEach(b => b.classList.toggle('active', parseFloat(b.dataset.val) === val));
+    }
+
+    // ── Save/Load Local ──────────────────────────────────────────
+    function saveLocal() {
+      localStorage.setItem('obs_controller_state', JSON.stringify({
+        badge: inputBadge.value, isLive: inputLive.checked,
+        headerActive: inputHeaderActive.checked,
+        speaker: inputSpeaker.value, title: inputTitle.value,
+        quoteEnabled: toggleQuote.checked,
+        quote: inputQuote.value, quoteRef: inputQuoteRef.value,
+        tickerLabel: rtLabel.value,
+        tickerVisible: rtVisible.checked,
+        tickerText: rtText.value,
+        elementScale: parseFloat(inputScale.value) || 1,
+        brandName: wtBrandName.value, brandTagline: wtBrandTagline.value,
+        kajianBadge: wtBadge.value, kajianTitle: wtTitle.value,
+        kajianSpeaker: wtSpeaker.value,
+        kjmTime: wtTime.value, kjmLoc: wtLoc.value,
+        waitingTarget: wtTarget.value
+      }));
+    }
+
+    async function sendState() {
+      srv.badge = inputBadge.value;
+      srv.isLive = inputLive.checked;
+      srv.headerActive = inputHeaderActive.checked;
+      srv.speaker = inputSpeaker.value;
+      srv.title = inputTitle.value;
+      srv.quote = toggleQuote.checked ? inputQuote.value : '';
+      srv.quoteRef = toggleQuote.checked ? inputQuoteRef.value : '';
+      srv.tickerLabel = rtLabel.value;
+      srv.tickerVisible = rtVisible.checked;
+      srv.tickerText = rtText.value;
+      srv.elementScale = parseFloat(inputScale.value) || 1;
+      srv.timestamp = Date.now();
+      srv.brandName = wtBrandName.value;
+      srv.brandTagline = wtBrandTagline.value;
+      srv.kajianBadge = wtBadge.value;
+      srv.kajianTitle = wtTitle.value;
+      srv.kajianSpeaker = wtSpeaker.value;
+      srv.kjmTime = wtTime.value;
+      srv.kjmLoc = wtLoc.value;
+      srv.waitingTarget = wtTarget.value;
+      saveLocal();
+      try {
+        await fetch('/api/state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(srv)
+        });
+      } catch (e) { /* server offline */ }
+    }
+
+    function loadLocal() {
+      const s = localStorage.getItem('obs_controller_state');
+      if (s) {
+        const d = JSON.parse(s);
+        inputBadge.value = d.badge || '';
+        inputLive.checked = d.isLive !== false;
+        inputHeaderActive.checked = d.headerActive !== false;
+        inputSpeaker.value = d.speaker || '';
+        inputTitle.value = d.title || '';
+        toggleQuote.checked = !!d.quoteEnabled;
         quoteFields.style.display = toggleQuote.checked ? 'block' : 'none';
-        inputQuote.value = state.quote || '';
-        inputQuoteRef.value = state.quoteRef || '';
-        inputTickerLabel.value = state.tickerLabel || 'INFO KAJIAN';
-        inputTickerVisible.checked = state.tickerVisible !== false;
-        inputTickerText.value = state.tickerText || '';
-        setScaleUI(parseFloat(state.elementScale) || 1);
-        // Waiting Scene
-        wtBrandName.value = state.brandName || '';
-        wtBrandTagline.value = state.brandTagline || '';
-        wtBadge.value = state.kajianBadge || '';
-        wtTitle.value = state.kajianTitle || '';
-        wtSpeaker.value = state.kajianSpeaker || '';
-        wtTime.value = state.kjmTime || '';
-        wtLoc.value = state.kjmLoc || '';
-        wtTarget.value = state.waitingTarget || '';
+        inputQuote.value = d.quote || '';
+        inputQuoteRef.value = d.quoteRef || '';
+        rtLabel.value = d.tickerLabel || 'INFO KAJIAN';
+        rtVisible.checked = d.tickerVisible !== false;
+        rtText.value = d.tickerText || '';
+        setScaleUI(parseFloat(d.elementScale) || 1);
+        wtBrandName.value = d.brandName || '';
+        wtBrandTagline.value = d.brandTagline || '';
+        wtBadge.value = d.kajianBadge || '';
+        wtTitle.value = d.kajianTitle || '';
+        wtSpeaker.value = d.kajianSpeaker || '';
+        wtTime.value = d.kjmTime || '';
+        wtLoc.value = d.kjmLoc || '';
+        wtTarget.value = d.waitingTarget || '';
       } else {
-        // Load default preset values into inputs
-        loadPresetData(defaultPresets[0]);
+        loadPreset(defaultPresets[0]);
       }
-
-      // Load custom presets
-      const savedPresets = localStorage.getItem('obs_custom_presets');
-      if (savedPresets) {
-        customPresets = JSON.parse(savedPresets);
-      }
+      const sp = localStorage.getItem('obs_custom_presets');
+      if (sp) customPresets = JSON.parse(sp);
       renderPresets();
     }
 
-    // Save active inputs to localStorage
-    function saveState() {
-      const state = {
-        badge: inputBadge.value,
-        isLive: inputLive.checked,
-        headerActive: inputHeaderActive.checked,
-        speaker: inputSpeaker.value,
-        title: inputTitle.value,
-        quoteEnabled: toggleQuote.checked,
-        quote: inputQuote.value,
-        quoteRef: inputQuoteRef.value,
-        tickerLabel: inputTickerLabel.value,
-        tickerVisible: inputTickerVisible.checked,
-        tickerText: inputTickerText.value,
-        elementScale: parseFloat(inputScale.value) || 1,
-        // Waiting Scene
-        brandName: wtBrandName.value,
-        brandTagline: wtBrandTagline.value,
-        kajianBadge: wtBadge.value,
-        kajianTitle: wtTitle.value,
-        kajianSpeaker: wtSpeaker.value,
-        kjmTime: wtTime.value,
-        kjmLoc: wtLoc.value,
-        waitingTarget: wtTarget.value
-      };
-      localStorage.setItem('obs_controller_state', JSON.stringify(state));
-    }
-
-    // Load selected preset into the form
-    function loadPresetData(preset) {
-      inputBadge.value = preset.badge || '';
-      inputLive.checked = preset.isLive !== false;
-      inputHeaderActive.checked = preset.headerActive !== false;
-      inputSpeaker.value = preset.speaker || '';
-      inputTitle.value = preset.title || '';
-      toggleQuote.checked = !!preset.quoteEnabled;
+    function loadPreset(p) {
+      inputBadge.value = p.badge || '';
+      inputLive.checked = p.isLive !== false;
+      inputHeaderActive.checked = p.headerActive !== false;
+      inputSpeaker.value = p.speaker || '';
+      inputTitle.value = p.title || '';
+      toggleQuote.checked = !!p.quoteEnabled;
       quoteFields.style.display = toggleQuote.checked ? 'block' : 'none';
-      inputQuote.value = preset.quote || '';
-      inputQuoteRef.value = preset.quoteRef || '';
-      inputTickerLabel.value = preset.tickerLabel || 'INFO KAJIAN';
-      inputTickerVisible.checked = preset.tickerVisible !== false;
-      inputTickerText.value = preset.tickerText || '';
-      if (preset.elementScale) setScaleUI(preset.elementScale);
-      saveState();
+      inputQuote.value = p.quote || '';
+      inputQuoteRef.value = p.quoteRef || '';
+      rtLabel.value = p.tickerLabel || 'INFO KAJIAN';
+      rtVisible.checked = p.tickerVisible !== false;
+      rtText.value = p.tickerText || '';
+      if (p.elementScale) setScaleUI(p.elementScale);
+      saveLocal();
     }
 
-    // Render presets list
     function renderPresets() {
       presetsContainer.innerHTML = '';
-
-      // Merge defaults with customs
-      const allPresets = [
-        ...defaultPresets.map(p => ({ ...p, isDefault: true })),
-        ...customPresets.map((p, idx) => ({ ...p, isDefault: false, index: idx }))
-      ];
-
-      allPresets.forEach(preset => {
+      [
+        ...defaultPresets.map(p => ({ ...p, _default: true })),
+        ...customPresets.map((p, i) => ({ ...p, _default: false, _idx: i }))
+      ].forEach(p => {
         const item = document.createElement('div');
         item.className = 'preset-item';
 
         const info = document.createElement('div');
         info.className = 'preset-info';
+        info.innerHTML = `<div class="preset-name">${p.name}</div><div class="preset-desc">${p.speaker ? p.speaker.split(',')[0] : ''} — ${p.title || ''}</div>`;
+        info.addEventListener('click', () => loadPreset(p));
 
-        const name = document.createElement('div');
-        name.className = 'preset-name';
-        name.textContent = preset.name;
-
-        const desc = document.createElement('div');
-        desc.className = 'preset-desc';
-        desc.textContent = `${preset.speaker ? preset.speaker.split(',')[0] : ''} - ${preset.title || ''}`;
-
-        info.appendChild(name);
-        info.appendChild(desc);
-        item.appendChild(info);
-
-        // Click on details loads preset
-        info.addEventListener('click', () => {
-          loadPresetData(preset);
-        });
-
-        const actions = document.createElement('div');
-        actions.className = 'preset-actions';
-
-        if (!preset.isDefault) {
-          const deleteBtn = document.createElement('button');
-          deleteBtn.className = 'icon-btn icon-btn-delete';
-          deleteBtn.innerHTML = `<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
-          deleteBtn.title = "Hapus Preset";
-          deleteBtn.addEventListener('click', (e) => {
+        const acts = document.createElement('div');
+        acts.className = 'preset-actions';
+        if (!p._default) {
+          const del = document.createElement('button');
+          del.className = 'icon-btn icon-btn-delete';
+          del.title = 'Hapus';
+          del.innerHTML = '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+          del.addEventListener('click', e => {
             e.stopPropagation();
-            deletePreset(preset.index);
+            if (confirm('Hapus preset ini?')) {
+              customPresets.splice(p._idx, 1);
+              localStorage.setItem('obs_custom_presets', JSON.stringify(customPresets));
+              renderPresets();
+            }
           });
-          actions.appendChild(deleteBtn);
+          acts.appendChild(del);
         } else {
           const badge = document.createElement('span');
-          badge.style.fontSize = '9px';
-          badge.style.color = 'var(--text-gold)';
-          badge.style.border = '1px solid var(--gold-dark)';
-          badge.style.padding = '2px 6px';
-          badge.style.borderRadius = '3px';
+          badge.style.cssText = 'font-size:9px;color:var(--text-gold);border:1px solid var(--gold-dark);padding:2px 6px;border-radius:3px;';
           badge.textContent = 'SYSTEM';
-          actions.appendChild(badge);
+          acts.appendChild(badge);
         }
 
-        item.appendChild(actions);
+        item.appendChild(info);
+        item.appendChild(acts);
         presetsContainer.appendChild(item);
       });
     }
 
-    // Save active state as custom preset
+    // ── Wiring Event Listeners ──────────────────────────────────
+    toggleQuote.addEventListener('change', () => { quoteFields.style.display = toggleQuote.checked ? 'block' : 'none'; });
+    btnShow.addEventListener('click', async () => { srv.lowerThirdActive = true; await sendState(); });
+    btnUpdate.addEventListener('click', async () => { await sendState(); });
+    btnHide.addEventListener('click', async () => { srv.lowerThirdActive = false; await sendState(); });
+    inputHeaderActive.addEventListener('change', async () => { await sendState(); });
+
+    [inputBadge, inputLive, inputSpeaker, inputTitle, inputQuote, inputQuoteRef, toggleQuote].forEach(el => {
+      el.addEventListener('input', saveLocal);
+      el.addEventListener('change', saveLocal);
+    });
+
+    inputScale.addEventListener('input', () => { setScaleUI(inputScale.value); sendState(); });
+    inputScaleVal.addEventListener('change', () => { setScaleUI(inputScaleVal.value); sendState(); });
+    scalePresetBtns.forEach(b => b.addEventListener('click', () => { setScaleUI(b.dataset.val); sendState(); }));
+
+    rtBtnShow.addEventListener('click', async () => { rtVisible.checked = true; srv.tickerVisible = true; await sendState(); });
+    rtBtnUpdate.addEventListener('click', async () => { await sendState(); });
+    rtBtnHide.addEventListener('click', async () => { rtVisible.checked = false; srv.tickerVisible = false; await sendState(); });
+    rtVisible.addEventListener('change', async () => { srv.tickerVisible = rtVisible.checked; await sendState(); });
+    [rtLabel, rtText].forEach(el => {
+      el.addEventListener('input', saveLocal);
+      el.addEventListener('change', saveLocal);
+    });
+
+    wtBtnUpdate.addEventListener('click', async () => { await sendState(); });
+    [wtBrandName, wtBrandTagline, wtBadge, wtTitle, wtSpeaker, wtTime, wtLoc, wtTarget].forEach(el => {
+      el.addEventListener('input', saveLocal);
+      el.addEventListener('change', saveLocal);
+    });
+
     btnSavePreset.addEventListener('click', () => {
       const name = presetSaveName.value.trim();
-      if (!name) {
-        alert('Tulis nama preset terlebih dahulu!');
-        return;
-      }
-
-      const newPreset = {
-        name: name,
-        badge: inputBadge.value,
-        isLive: inputLive.checked,
+      if (!name) { alert('Tulis nama preset terlebih dahulu!'); return; }
+      customPresets.push({
+        name, badge: inputBadge.value, isLive: inputLive.checked,
         headerActive: inputHeaderActive.checked,
-        speaker: inputSpeaker.value,
-        title: inputTitle.value,
-        quoteEnabled: toggleQuote.checked,
-        quote: inputQuote.value,
-        quoteRef: inputQuoteRef.value,
-        tickerLabel: inputTickerLabel.value,
-        tickerVisible: inputTickerVisible.checked,
-        tickerText: inputTickerText.value
-      };
-
-      customPresets.push(newPreset);
+        speaker: inputSpeaker.value, title: inputTitle.value,
+        quoteEnabled: toggleQuote.checked, quote: inputQuote.value, quoteRef: inputQuoteRef.value,
+        tickerLabel: rtLabel.value, tickerVisible: rtVisible.checked, tickerText: rtText.value
+      });
       localStorage.setItem('obs_custom_presets', JSON.stringify(customPresets));
       presetSaveName.value = '';
       renderPresets();
     });
 
-    // Delete custom preset
-    function deletePreset(index) {
-      if (confirm('Apakah Anda yakin ingin menghapus preset ini?')) {
-        customPresets.splice(index, 1);
-        localStorage.setItem('obs_custom_presets', JSON.stringify(customPresets));
-        renderPresets();
-      }
-    }
-
-    // --- Action Triggers via HTTP Server API ---
-
-    let currentServerState = {
-      lowerThirdActive: false,
-      tickerActive: true,
-      badge: '',
-      isLive: true,
-      headerActive: true,
-      speaker: '',
-      title: '',
-      quote: '',
-      quoteRef: '',
-      tickerLabel: 'INFO KAJIAN',
-      tickerVisible: true,
-      tickerText: '',
-      elementScale: 1,
-      // Waiting Scene
-      brandName: '',
-      brandTagline: '',
-      kajianBadge: '',
-      kajianTitle: '',
-      kajianSpeaker: '',
-      kjmTime: '',
-      kjmLoc: '',
-      waitingTarget: '',
-      timestamp: 0
-    };
-
-    // ─── Scale UI helpers ────────────────────────────────────────
-    function setScaleUI(val) {
-      val = Math.min(3, Math.max(0.5, parseFloat(val) || 1));
-      inputScale.value = val;
-      inputScaleVal.value = val;
-      // Update range fill gradient
-      const pct = ((val - 0.5) / 2.5) * 100;
-      inputScale.style.background =
-        `linear-gradient(90deg, var(--gold-primary) ${pct}%, #2a2a2a ${pct}%)`;
-      // Highlight active preset button
-      scalePresetBtns.forEach(btn => {
-        btn.classList.toggle('active', parseFloat(btn.dataset.val) === val);
-      });
-    }
-
-    // Sync slider ↔ number input
-    inputScale.addEventListener('input', () => {
-      setScaleUI(inputScale.value);
-      sendStateToServer();
-    });
-    inputScaleVal.addEventListener('change', () => {
-      setScaleUI(inputScaleVal.value);
-      sendStateToServer();
-    });
-    scalePresetBtns.forEach(btn => {
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        setScaleUI(btn.dataset.val);
-        sendStateToServer();
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
       });
     });
-    // Initialize
-    setScaleUI(1);
 
-    async function sendStateToServer() {
-      // Build the current state object from inputs
-      currentServerState.badge = inputBadge.value;
-      currentServerState.isLive = inputLive.checked;
-      currentServerState.headerActive = inputHeaderActive.checked;
-      currentServerState.speaker = inputSpeaker.value;
-      currentServerState.title = inputTitle.value;
-      currentServerState.quote = toggleQuote.checked ? inputQuote.value : '';
-      currentServerState.quoteRef = toggleQuote.checked ? inputQuoteRef.value : '';
-      currentServerState.tickerLabel = inputTickerLabel.value;
-      currentServerState.tickerVisible = inputTickerVisible.checked;
-      currentServerState.tickerText = inputTickerText.value;
-      currentServerState.elementScale = parseFloat(inputScale.value) || 1;
-      currentServerState.timestamp = Date.now();
-      // Waiting Scene fields (always included in shared state)
-      currentServerState.brandName = wtBrandName.value;
-      currentServerState.brandTagline = wtBrandTagline.value;
-      currentServerState.kajianBadge = wtBadge.value;
-      currentServerState.kajianTitle = wtTitle.value;
-      currentServerState.kajianSpeaker = wtSpeaker.value;
-      currentServerState.kjmTime = wtTime.value;
-      currentServerState.kjmLoc = wtLoc.value;
-      currentServerState.waitingTarget = wtTarget.value;
-
-      saveState();
-
-      try {
-        await fetch('/api/state', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(currentServerState)
-        });
-      } catch (err) {
-        console.error("Failed to save state to server:", err);
-      }
-    }
-
-    btnShow.addEventListener('click', async () => {
-      currentServerState.lowerThirdActive = true;
-      await sendStateToServer();
+    // Preview switcher
+    document.querySelectorAll('.preview-sel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preview-sel-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        previewFrame.src = btn.dataset.src;
+        previewLabelText.textContent = btn.dataset.lbl;
+      });
     });
 
-    btnUpdate.addEventListener('click', async () => {
-      await sendStateToServer();
-    });
-
-    btnHide.addEventListener('click', async () => {
-      currentServerState.lowerThirdActive = false;
-      await sendStateToServer();
-    });
-
-    // Auto-save & sync header on toggle
-    inputHeaderActive.addEventListener('change', async () => {
-      await sendStateToServer();
-    });
-
-    // Auto-save & sync ticker on toggle
-    inputTickerVisible.addEventListener('change', async () => {
-      currentServerState.tickerVisible = inputTickerVisible.checked;
-      await sendStateToServer();
-    });
-
-    // Auto-save form values on editing
-    const allInputs = [
-      inputBadge, inputLive, inputHeaderActive, inputSpeaker, inputTitle,
-      toggleQuote, inputQuote, inputQuoteRef,
-      inputTickerLabel, inputTickerText
-    ];
-    allInputs.forEach(input => {
-      input.addEventListener('input', saveState);
-      input.addEventListener('change', saveState);
-    });
-    // Scale already wired above
-
-    // --- Connectivity check (Polling server to see if overlay is connected) ---
-    async function checkOverlayConnection() {
+    // ── Connectivity Check ────────────────────────────────────────
+    async function checkConnection() {
       try {
         const res = await fetch('/api/state?client=control');
         if (res.ok) {
@@ -1403,52 +703,19 @@
           connectionDot.className = 'status-dot';
           connectionStatus.textContent = 'SERVER OFFLINE (RUN START.BAT)';
         }
-      } catch (err) {
+      } catch (e) {
         connectionDot.className = 'status-dot';
         connectionStatus.textContent = 'SERVER OFFLINE (RUN START.BAT)';
       }
     }
+    setInterval(checkConnection, 2000);
+    setTimeout(checkConnection, 200);
 
-    // Poll server for connection status every 2 seconds
-    setInterval(checkOverlayConnection, 2000);
-    setTimeout(checkOverlayConnection, 200); // initial check
-
-    // Initialize Page
-    loadState();
-
-    // Check if running on local file system instead of HTTP server
+    // ── Init ──────────────────────────────────────────────────────
+    loadLocal();
     if (window.location.protocol === 'file:') {
       document.getElementById('file-warning-banner').style.display = 'block';
     }
-
-    // ─── Tab Switching ──────────────────────────────────────────
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const target = btn.dataset.tab;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(target).classList.add('active');
-
-        // Swap preview iframe
-        const isWaiting = target === 'tab-waiting';
-        document.querySelectorAll('.preview-tab').forEach(el => el.classList.remove('active'));
-        (isWaiting ? previewFrameWaiting : previewFrame).classList.add('active');
-        previewLabelText.textContent = isWaiting ? 'WAITING SCENE PREVIEW' : 'LOWER THIRD PREVIEW';
-      });
-    });
-
-    // ─── Waiting Form: auto-save on change ──────────────────────
-    [wtBrandName, wtBrandTagline, wtBadge, wtTitle, wtSpeaker, wtTime, wtLoc, wtTarget]
-      .forEach(inp => {
-        inp.addEventListener('input', saveState);
-        inp.addEventListener('change', saveState);
-      });
-
-    // ─── Waiting Form: send button ───────────────────────────────
-    wtBtnUpdate.addEventListener('click', async () => {
-      await sendStateToServer();
-    });
   </script>
 </body>
 

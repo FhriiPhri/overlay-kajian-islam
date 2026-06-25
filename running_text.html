@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Overlay – Running Text</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    /* Standalone overrides for running_text overlay size and position */
+    #ticker {
+      position: fixed;
+      width: 100%;
+      height: 120px;
+      border-top-width: 4px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, .5);
+      transition-timing-function: cubic-bezier(.22, 1, .36, 1);
+    }
+
+    #ticker-label {
+      font-size: 28px;
+      padding: 0 40px;
+      box-shadow: 15px 0 30px rgba(0, 0, 0, .4);
+    }
+  </style>
+</head>
+
+<body class="canvas-responsive">
+
+  <div id="ticker">
+    <div id="ticker-label">INFO</div>
+    <div class="ticker-content">
+      <div id="ticker-track"></div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    const tickerEl = document.getElementById('ticker');
+    const labelEl = document.getElementById('ticker-label');
+    const trackEl = document.getElementById('ticker-track');
+
+    let prevText = null;
+    let prevLabel = null;
+    let prevVisible = null;
+
+    function setTrackText(raw) {
+      const text = (raw || '').trim();
+      if (!text) {
+        trackEl.innerHTML = '';
+        trackEl.style.animation = 'none';
+        return;
+      }
+
+      function makeHalf() {
+        const span = document.createElement('span');
+        span.className = 'ticker-span';
+        span.textContent = text;
+        const sep = document.createElement('span');
+        sep.className = 'ticker-sep';
+        sep.textContent = ' ✦ ';
+        const frag = document.createDocumentFragment();
+        frag.appendChild(span);
+        frag.appendChild(sep);
+        return frag;
+      }
+
+      trackEl.innerHTML = '';
+      trackEl.appendChild(makeHalf());
+      trackEl.appendChild(makeHalf());
+
+      void trackEl.offsetWidth;
+
+      const charCount = text.length;
+      const dur = Math.max(15, Math.min(120, charCount * 0.45));
+
+      trackEl.style.animation = 'none';
+      void trackEl.offsetWidth;
+      trackEl.style.animation = `marquee ${dur}s linear infinite`;
+    }
+
+    function applyState(state) {
+      const vis = !!state.tickerVisible;
+      const raw = (state.tickerText || '').trim();
+      const lbl = (state.tickerLabel || 'INFO').trim();
+
+      if (lbl !== prevLabel) {
+        prevLabel = lbl;
+        labelEl.textContent = lbl;
+      }
+
+      if (raw !== prevText) {
+        prevText = raw;
+        setTrackText(raw);
+      }
+
+      if (vis !== prevVisible) {
+        prevVisible = vis;
+        tickerEl.classList.toggle('visible', vis);
+      }
+    }
+
+    async function poll() {
+      try {
+        const res = await fetch('/api/state?client=running_text', { cache: 'no-store' });
+        if (res.ok) applyState(await res.json());
+      } catch (_) {
+        // Server offline
+      }
+    }
+
+    setInterval(poll, 250);
+    poll();
+  </script>
+</body>
+
+</html>
