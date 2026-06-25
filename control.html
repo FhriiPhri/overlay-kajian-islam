@@ -484,7 +484,7 @@
       elementScale: 1,
       brandName: '', brandTagline: '',
       kajianBadge: '', kajianTitle: '', kajianSpeaker: '',
-      kjmTime: '', kjmLoc: '', waitingTarget: '',
+      kjmDate: '', kjmTime: '', kjmLoc: '', waitingTarget: '',
       timestamp: 0
     };
 
@@ -518,6 +518,15 @@
       }));
     }
 
+    const HARI = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    function formatTanggal(datetimeStr) {
+      if (!datetimeStr) return '';
+      const d = new Date(datetimeStr);
+      if (isNaN(d.getTime())) return '';
+      return `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
     async function sendState() {
       srv.badge = inputBadge.value;
       srv.isLive = inputLive.checked;
@@ -536,6 +545,7 @@
       srv.kajianBadge = wtBadge.value;
       srv.kajianTitle = wtTitle.value;
       srv.kajianSpeaker = wtSpeaker.value;
+      srv.kjmDate = formatTanggal(wtTarget.value);
       srv.kjmTime = wtTime.value;
       srv.kjmLoc = wtLoc.value;
       srv.waitingTarget = wtTarget.value;
