@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kajian Islami - OBS Live Controller</title>
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/control.css">
 </head>
 
 <body class="dashboard">
@@ -34,8 +35,37 @@
       </div>
     </header>
 
+    <!-- Preview Pane (wide, left side) -->
+    <div class="preview-pane">
+      <!-- Live Preview -->
+      <section class="card" style="padding:20px;">
+        <h2 class="card-title" style="margin-bottom:15px;">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z" />
+          </svg>
+          Live Render Monitor
+        </h2>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+          <button class="preview-sel-btn active" data-src="output.html" data-lbl="FULL OVERLAY">Full</button>
+          <button class="preview-sel-btn" data-src="overlay_header.html" data-lbl="HEADER ONLY">Header</button>
+          <button class="preview-sel-btn" data-src="overlay_lower_third.html" data-lbl="LOWER THIRD">Lower
+            Third</button>
+          <button class="preview-sel-btn" data-src="running_text.html" data-lbl="RUNNING TEXT">Running Text</button>
+          <button class="preview-sel-btn" data-src="waiting.html" data-lbl="WAITING SCENE">Waiting</button>
+        </div>
+        <div class="preview-box">
+          <span class="preview-label" id="preview-label-text">FULL OVERLAY</span>
+          <iframe id="preview-frame" class="preview-iframe" src="output.html"></iframe>
+        </div>
+      </section>
+    </div><!-- /.preview-pane -->
+
+    <!-- Control Sidebar (right side) -->
+    <aside class="control-sidebar">
+
     <!-- Tab Navigation -->
-    <nav class="tab-nav">
+    <nav class="sidebar-tabs">
       <button class="tab-btn active" data-tab="tab-lowerthird">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
           <path
@@ -320,32 +350,6 @@
 
     </div><!-- /.left-column -->
 
-    <!-- Right Column: Preview + Presets -->
-    <div class="right-column">
-
-      <!-- Live Preview -->
-      <section class="card" style="padding:20px;">
-        <h2 class="card-title" style="margin-bottom:15px;">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-            <path
-              d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z" />
-          </svg>
-          Live Render Monitor
-        </h2>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
-          <button class="preview-sel-btn active" data-src="output.html" data-lbl="FULL OVERLAY">Full</button>
-          <button class="preview-sel-btn" data-src="overlay_header.html" data-lbl="HEADER ONLY">Header</button>
-          <button class="preview-sel-btn" data-src="overlay_lower_third.html" data-lbl="LOWER THIRD">Lower
-            Third</button>
-          <button class="preview-sel-btn" data-src="running_text.html" data-lbl="RUNNING TEXT">Running Text</button>
-          <button class="preview-sel-btn" data-src="waiting.html" data-lbl="WAITING SCENE">Waiting</button>
-        </div>
-        <div class="preview-box">
-          <span class="preview-label" id="preview-label-text">FULL OVERLAY</span>
-          <iframe id="preview-frame" class="preview-iframe" src="output.html"></iframe>
-        </div>
-      </section>
-
       <!-- Preset Library -->
       <section class="card">
         <h2 class="card-title">
@@ -365,7 +369,7 @@
         <div id="presets-container" class="preset-list"></div>
       </section>
 
-    </div><!-- /.right-column -->
+    </aside><!-- /.control-sidebar -->
 
   </div><!-- /.dashboard-container -->
 
@@ -415,6 +419,24 @@
     const presetsContainer = document.getElementById('presets-container');
     const presetSaveName = document.getElementById('preset-save-name');
     const btnSavePreset = document.getElementById('btn-save-preset');
+
+    // ── Responsive Preview Scaling ──────────────────────────────────
+    // preview-box sekarang lebar dinamis (mengikuti panel kiri), jadi skala
+    // iframe (kanvas tetap 3840x2160) dihitung ulang setiap kali lebar berubah.
+    const previewBox = document.querySelector('.preview-box');
+    function fitPreview() {
+      if (!previewBox || !previewFrame) return;
+      const scale = previewBox.clientWidth / 3840;
+      previewFrame.style.transform = `scale(${scale})`;
+    }
+    if (previewBox) {
+      if (window.ResizeObserver) {
+        new ResizeObserver(fitPreview).observe(previewBox);
+      } else {
+        window.addEventListener('resize', fitPreview);
+      }
+      fitPreview();
+    }
 
     // ── Default Presets ──────────────────────────────────────────
     const defaultPresets = [
